@@ -1,5 +1,4 @@
 ﻿using Maets.Domain.Entities;
-using Maets.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 

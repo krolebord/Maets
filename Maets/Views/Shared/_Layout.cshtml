@@ -42,8 +42,8 @@
         &copy; 2022 - Maets - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
     </div>
 </footer>
+@await RenderSectionAsync("Scripts", required: false)
 <script src="~/js/vendor.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
-@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

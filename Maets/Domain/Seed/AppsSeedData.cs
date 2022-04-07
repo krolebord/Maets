@@ -1,6 +1,5 @@
 using Maets.Domain.Entities;
 using Maets.Domain.Seed.Common;
-using Maets.Models;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Packaging;
 

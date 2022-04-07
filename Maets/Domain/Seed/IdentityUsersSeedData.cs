@@ -4,43 +4,52 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Maets.Domain.Seed;
 
-public class IdentityUsersSeedData : SeedData<IdentityUser>
+public class IdentityUsersSeedData : ISeedData<IdentityUser>
 {
-    protected override Task<bool> CheckIfInDatabaseAsync(DbSet<IdentityUser> set, IdentityUser entity)
+    private readonly UserManager<IdentityUser> _userManager;
+
+    public int Order => 0;
+
+    public IdentityUsersSeedData(UserManager<IdentityUser> userManager)
     {
-        return set.AnyAsync(x => x.Id == entity.Id);
+        _userManager = userManager;
     }
 
-    protected override Task<IEnumerable<IdentityUser>> GetEntities(DbContext context)
+    public async Task ApplyAsync(DbContext context)
     {
-        var passwordHasher = new PasswordHasher<IdentityUser>();
-
         var users = new IdentityUser[]
         {
             new()
             {
                 Id = DefaultUserData.Admin.Id,
                 UserName = DefaultUserData.Admin.UserName,
-                Email = "admin@mail.com"
+                Email = "admin@mail.com",
+                EmailConfirmed = true
             },
             new()
             {
                 Id = DefaultUserData.Dev.Id,
                 UserName = DefaultUserData.Dev.UserName,
-                Email = "dev@mail.com"
+                Email = "dev@mail.com",
+                EmailConfirmed = true
             },
             new()
             {
                 Id = DefaultUserData.User.Id,
                 UserName = DefaultUserData.User.UserName,
-                Email = "user@mail.com"
+                Email = "user@mail.com",
+                EmailConfirmed = true
             }
         };
 
-        return Task.FromResult(users.Select(user =>
+        foreach (var user in users)
         {
-            user.PasswordHash = passwordHasher.HashPassword(user, "pass12!");
-            return user;
-        }));
+            if (await _userManager.FindByIdAsync(user.Id) is not null)
+            {
+                continue;
+            }
+
+            await _userManager.CreateAsync(user, "Password12!");
+        }
     }
 }

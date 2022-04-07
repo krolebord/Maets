@@ -16,3 +16,7 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+form .form-floating {
+    margin: 0.5rem 0;
+}

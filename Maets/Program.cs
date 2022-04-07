@@ -2,9 +2,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Maets.Data;
 using Maets.Extensions;
-using Microsoft.Extensions.FileProviders;
+using Maets.Options;
+using Maets.Services;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddOptions<MailOptions>().BindConfiguration("MailOptions");
 
 // Add services to the container.
 var authConnectionString = builder.Configuration.GetConnectionString("AuthConnection");
@@ -17,9 +21,21 @@ builder.Services.AddDbContext<MaetsDbContext>(options =>
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+    {
+        options.User.RequireUniqueEmail = true;
+        options.SignIn.RequireConfirmedAccount = true;
+    })
+    .AddDefaultTokenProviders()
     .AddEntityFrameworkStores<AuthDbContext>();
+
+builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddSingleton<ISmtpClientFactory, SmtpClientFactory>();
+builder.Services.AddTransient<IEmailSender, EmailSender>();
+
+builder.Services.AddSeedData(typeof(Program).Assembly);
 
 var app = builder.Build();
 
