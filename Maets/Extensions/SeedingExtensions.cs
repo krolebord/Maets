@@ -9,6 +9,8 @@ public static class SeedingExtensions
 {
     private record struct SeedDataInfo(Type EntityType, Type SeedDataType);
 
+    private record struct SeedDataInstanceInfo(Type EntityType, ISeedData SeedData);
+
     public static IServiceCollection AddSeedData(this IServiceCollection services, Assembly assembly)
     {
         var seedDataInfos = GetSeedDataInfos(assembly);
@@ -25,18 +27,25 @@ public static class SeedingExtensions
 
     public static async Task SeedAndMigrateAsync(this WebApplication app)
     {
-        var seedDataInfos = app.Services.GetRequiredService<SeedDataInfo[]>();
-
         using var scope = app.Services.CreateScope();
         var services = scope.ServiceProvider;
 
+        var seedDataInfos = services.GetRequiredService<SeedDataInfo[]>()
+            .Select(x => new SeedDataInstanceInfo
+            {
+                EntityType = x.EntityType,
+                SeedData = (ISeedData)services.GetRequiredService(x.SeedDataType)
+            })
+            .OrderBy(x => x.SeedData.Order)
+            .ToArray();
+
         var authContext = services.GetRequiredService<AuthDbContext>();
         await authContext.Database.MigrateAsync();
-        await ApplySeedingAsync(services, authContext, seedDataInfos);
+        await ApplySeedingAsync(authContext, seedDataInfos);
 
         var dataContext = services.GetRequiredService<MaetsDbContext>();
         await dataContext.Database.MigrateAsync();
-        await ApplySeedingAsync(services, dataContext, seedDataInfos);
+        await ApplySeedingAsync(dataContext, seedDataInfos);
     }
 
     private static SeedDataInfo[] GetSeedDataInfos(Assembly assembly)
@@ -56,12 +65,12 @@ public static class SeedingExtensions
             .ToArray();
     }
 
-    private static async Task ApplySeedingAsync(IServiceProvider services, DbContext context, SeedDataInfo[] seedDataInfos)
+    private static async Task ApplySeedingAsync(DbContext context, SeedDataInstanceInfo[] seedDataInfos)
     {
         await using var transaction = await context.Database.BeginTransactionAsync();
         var seedDataInstances = seedDataInfos
             .Where(x => context.Model.FindEntityType(x.EntityType) is not null)
-            .Select(x => (ISeedData)services.GetRequiredService(x.SeedDataType));
+            .Select(x => x.SeedData);
 
         foreach (ISeedData seedData in seedDataInstances)
         {

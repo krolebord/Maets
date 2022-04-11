@@ -82,7 +82,7 @@ public partial class InitialDataMigration : Migration
                     ""UserName"" NVARCHAR(255) NOT NULL,
                     ""AvatarId"" UNIQUEIDENTIFIER NULL,
                     CONSTRAINT ""users_id_primary"" PRIMARY KEY (Id),
-                    CONSTRAINT ""users_avatarid_foreign"" FOREIGN KEY (""AvatarId"") REFERENCES ""MediaFiles""(""Id"")
+                    CONSTRAINT ""users_avatarid_foreign"" FOREIGN KEY (""AvatarId"") REFERENCES ""MediaFiles""(""Id"") ON DELETE CASCADE
                 );
 
                 CREATE UNIQUE INDEX ""users_username_unique""
@@ -93,13 +93,13 @@ public partial class InitialDataMigration : Migration
                     ""UserId"" UNIQUEIDENTIFIER not null,
                     ""CompanyId"" UNIQUEIDENTIFIER not null,
                     constraint ""employees_id_primary"" PRIMARY KEY (Id),
-                    constraint ""employees_userid_foreign"" FOREIGN KEY (""UserId"") REFERENCES ""Users""(""Id""),
-                    constraint ""employees_companyid_foreign"" FOREIGN KEY (""CompanyId"") REFERENCES ""Companies""(""Id"")
+                    constraint ""employees_userid_foreign"" FOREIGN KEY (""UserId"") REFERENCES ""Users""(""Id"") ON DELETE CASCADE,
+                    constraint ""employees_companyid_foreign"" FOREIGN KEY (""CompanyId"") REFERENCES ""Companies""(""Id"") ON DELETE CASCADE
                 );
 
                 ALTER TABLE ""Apps""
                     ADD
-                        CONSTRAINT ""apps_publisherid_foreign"" FOREIGN KEY(""PublisherId"") REFERENCES ""Companies""(""Id"");
+                        CONSTRAINT ""apps_publisherid_foreign"" FOREIGN KEY(""PublisherId"") REFERENCES ""Companies""(""Id"") ON DELETE CASCADE;
 
                 ALTER TABLE ""Companies""
                     ADD
@@ -107,26 +107,26 @@ public partial class InitialDataMigration : Migration
 
                 ALTER TABLE ""Reviews""
                     ADD
-                        CONSTRAINT ""reviews_appid_foreign"" FOREIGN KEY(""AppId"") REFERENCES ""Apps""(""Id"");
+                        CONSTRAINT ""reviews_appid_foreign"" FOREIGN KEY(""AppId"") REFERENCES ""Apps""(""Id"") ON DELETE CASCADE;
 
                 ALTER TABLE ""Apps_Developers""
                     ADD
-                        CONSTRAINT ""apps_developers_appid_foreign"" FOREIGN KEY(""AppId"") REFERENCES ""Apps""(""Id""),
+                        CONSTRAINT ""apps_developers_appid_foreign"" FOREIGN KEY(""AppId"") REFERENCES ""Apps""(""Id"") ON DELETE CASCADE,
                         CONSTRAINT ""apps_developers_companyid_foreign"" FOREIGN KEY(""CompanyId"") REFERENCES ""Companies""(""Id"");
 
                 ALTER TABLE ""Apps_Labels""
                     ADD
-                        CONSTRAINT ""apps_labels_appid_foreign"" FOREIGN KEY(""AppId"") REFERENCES ""Apps""(""Id""),
-                        CONSTRAINT ""apps_labels_labelid_foreign"" FOREIGN KEY(""LabelId"") REFERENCES ""Labels""(""Id"");
+                        CONSTRAINT ""apps_labels_appid_foreign"" FOREIGN KEY(""AppId"") REFERENCES ""Apps""(""Id"") ON DELETE CASCADE,
+                        CONSTRAINT ""apps_labels_labelid_foreign"" FOREIGN KEY(""LabelId"") REFERENCES ""Labels""(""Id"") ON DELETE CASCADE;
 
                 ALTER TABLE ""App_Screenshots""
                     ADD
-                        CONSTRAINT ""app_screenshots_appid_foreign"" FOREIGN KEY(""AppId"") REFERENCES ""Apps""(""Id""),
-                        CONSTRAINT ""app_screenshots_fileid_foreign"" FOREIGN KEY(""FileId"") REFERENCES ""MediaFiles""(""Id"");
+                        CONSTRAINT ""app_screenshots_appid_foreign"" FOREIGN KEY(""AppId"") REFERENCES ""Apps""(""Id"") ON DELETE CASCADE,
+                        CONSTRAINT ""app_screenshots_fileid_foreign"" FOREIGN KEY(""FileId"") REFERENCES ""MediaFiles""(""Id"") ON DELETE CASCADE;
 
                 Alter TABLE ""Reviews""
                     ADD
-                        CONSTRAINT ""reviews_authorid_foreign"" FOREIGN KEY (""AuthorId"") REFERENCES ""Users""(""Id"")
+                        CONSTRAINT ""reviews_authorid_foreign"" FOREIGN KEY (""AuthorId"") REFERENCES ""Users""(""Id"") ON DELETE CASCADE;
 
                 COMMIT;
             ");

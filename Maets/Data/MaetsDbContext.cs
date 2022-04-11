@@ -171,7 +171,8 @@ public class MaetsDbContext : DbContext
             entity.HasOne(d => d.App)
                 .WithMany(p => p.Reviews)
                 .HasForeignKey(d => d.AppId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("reviews_appid_foreign");
 
             entity.HasOne(d => d.Author)
