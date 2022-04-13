@@ -7,7 +7,7 @@ using Maets.Domain.Entities;
 
 namespace Maets.Controllers;
 
-public class AppsController : Controller
+public class AppsController : MaetsController
 {
     private readonly MaetsDbContext _context;
 

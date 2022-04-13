@@ -2,6 +2,7 @@ const gulp = require('gulp');
 const concat = require('gulp-concat');
 
 const vendorStyles = [
+    "node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker.css"
 ];
 const vendorScripts = [
     "node_modules/jquery/dist/jquery.js",
@@ -9,6 +10,7 @@ const vendorScripts = [
     "node_modules/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.js",
     "node_modules/popper.js/dist/umd/index.js",
     "node_modules/bootstrap/dist/js/bootstrap.js",
+    "node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.js"
 ];
 
 gulp.task('build-vendor-css', () => {
@@ -25,4 +27,4 @@ gulp.task('build-vendor-js', () => {
 
 gulp.task('build-vendor', gulp.parallel('build-vendor-css', 'build-vendor-js'));
 
-gulp.task('default', gulp.series('build-vendor-js'));
+gulp.task('default', gulp.series('build-vendor'));

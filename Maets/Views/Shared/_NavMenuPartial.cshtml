@@ -1,0 +1,64 @@
+@using Microsoft.AspNetCore.Identity
+@using Maets.Extensions
+@inject SignInManager<IdentityUser> SignInManager
+<ul class="navbar-nav me-auto mb-2 mb-lg-0 flex-grow-1 justify-content-center">
+    <li class="nav-item dropdown">
+        <a class="nav-link text-light"
+           asp-area="" asp-controller="Store" asp-action="Index">
+            Store
+        </a>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" asp-controller="Store" asp-action="Index">Home</a></li>
+            <li><a class="dropdown-item" asp-controller="Store" asp-action="Search">Search</a></li>
+        </ul>
+    </li>
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="nav-item dropdown">
+            <a class="nav-link text-light"
+               asp-area="" asp-controller="Store" asp-action="Index">
+                Community
+            </a>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" asp-controller="Store" asp-action="Index">Home</a></li>
+                <li><a class="dropdown-item" asp-controller="Store" asp-action="Search">Search</a></li>
+            </ul>
+        </li>
+    }
+    @if (SignInManager.IsDev(User))
+    {
+        <li class="nav-item dropdown">
+            <a class="nav-link text-light"
+               asp-area="" asp-controller="Store" asp-action="Index">
+                Studio
+            </a>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" asp-controller="Store" asp-action="Index">Home</a></li>
+                <li><a class="dropdown-item" asp-controller="Store" asp-action="Search">Search</a></li>
+            </ul>
+        </li>
+    }
+    @if (SignInManager.IsAdmin(User))
+    {
+        <li class="nav-item dropdown">
+            <a class="nav-link text-light"
+               asp-area="" asp-controller="Store" asp-action="Index">
+                Administration
+            </a>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" asp-controller="Store" asp-action="Index">Users</a></li>
+                <li><a class="dropdown-item" asp-controller="Companies" asp-action="Index">Companies</a></li>
+                <li><a class="dropdown-item" asp-controller="Apps" asp-action="Index">Apps</a></li>
+            </ul>
+        </li>
+    }
+    <li class="nav-item dropdown">
+        <a class="nav-link text-light"
+           asp-area="" asp-controller="About" asp-action="Index">
+            About
+        </a>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" asp-controller="About" asp-action="Privacy">Privacy</a></li>
+        </ul>
+    </li>
+</ul>

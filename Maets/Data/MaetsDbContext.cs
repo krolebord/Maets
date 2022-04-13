@@ -1,4 +1,4 @@
-﻿using Maets.Domain.Entities;
+using Maets.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 
@@ -218,4 +218,6 @@ public class MaetsDbContext : DbContext
                 .HasConstraintName("employees_companyid_foreign");
         });
     }
+
+    public DbSet<Maets.Domain.Entities.User> User { get; set; }
 }
