@@ -1,6 +1,5 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-#nullable disable
 
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
@@ -25,20 +24,16 @@ namespace Maets.Areas.Identity.Pages.Account.Manage
             _logger = logger;
         }
 
-        
         [BindProperty]
-        public InputModel Input { get; set; }
+        public InputModel Input { get; set; } = null!;
 
-        
         public class InputModel
         {
-            
             [Required]
             [DataType(DataType.Password)]
-            public string Password { get; set; }
+            public string? Password { get; set; }
         }
 
-        
         public bool RequirePassword { get; set; }
 
         public async Task<IActionResult> OnGet()
@@ -80,7 +75,7 @@ namespace Maets.Areas.Identity.Pages.Account.Manage
 
             await _signInManager.SignOutAsync();
 
-            _logger.LogInformation("User with ID '{UserId}' deleted themselves.", userId);
+            _logger.LogInformation("User with ID '{UserId}' deleted themselves", userId);
 
             return Redirect("~/");
         }

@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using Maets.Models;
+using Maets.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Maets.Controllers;

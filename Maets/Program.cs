@@ -3,8 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Maets.Data;
 using Maets.Extensions;
 using Maets.Options;
-using Maets.Services;
-using Microsoft.AspNetCore.Identity.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,8 +21,14 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
     {
-        options.User.RequireUniqueEmail = true;
-        options.SignIn.RequireConfirmedAccount = true;
+        options.User.RequireUniqueEmail = false;
+        options.SignIn.RequireConfirmedEmail = false;
+        options.SignIn.RequireConfirmedAccount = false;
+        options.Password.RequireDigit = true;
+        options.Password.RequiredLength = 6;
+        options.Password.RequireLowercase = false;
+        options.Password.RequireUppercase = false;
+        options.Password.RequireNonAlphanumeric = false;
     })
     .AddDefaultTokenProviders()
     .AddEntityFrameworkStores<AuthDbContext>();
@@ -32,10 +36,12 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddSingleton<ISmtpClientFactory, SmtpClientFactory>();
-builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddSeedData(typeof(Program).Assembly);
+var assembly = typeof(Program).Assembly;
+
+builder.Services.AddDependencies(assembly);
+builder.Services.AddSeedData(assembly);
 
 var app = builder.Build();
 

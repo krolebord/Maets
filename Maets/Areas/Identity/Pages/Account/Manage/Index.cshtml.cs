@@ -1,6 +1,5 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-#nullable disable
 
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
@@ -22,36 +21,30 @@ namespace Maets.Areas.Identity.Pages.Account.Manage
             _signInManager = signInManager;
         }
 
-        
-        public string Username { get; set; }
 
-        
         [TempData]
-        public string StatusMessage { get; set; }
+        public string? StatusMessage { get; set; }
 
-        
+
         [BindProperty]
-        public InputModel Input { get; set; }
+        public InputModel Input { get; set; } = null!;
 
-        
+
         public class InputModel
         {
-            
-            [Phone]
-            [Display(Name = "Phone number")]
-            public string PhoneNumber { get; set; }
+            [Required]
+            [StringLength(64, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [Display(Name = "User name")]
+            public string UserName { get; set; } = null!;
         }
 
         private async Task LoadAsync(IdentityUser user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-
-            Username = userName;
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                UserName = userName
             };
         }
 
@@ -81,16 +74,19 @@ namespace Maets.Areas.Identity.Pages.Account.Manage
                 return Page();
             }
 
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-            if (Input.PhoneNumber != phoneNumber)
+            if (string.IsNullOrWhiteSpace(Input.UserName) || Input.UserName == user.UserName)
             {
-                var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
-                if (!setPhoneResult.Succeeded)
-                {
-                    StatusMessage = "Unexpected error when trying to set phone number.";
-                    return RedirectToPage();
-                }
+                StatusMessage = "Warning Your email is unchanged.";
+                return Page();
             }
+
+            if (await _userManager.FindByNameAsync(Input.UserName) is not null)
+            {
+                StatusMessage = "Error This user name is already taken";
+                return Page();
+            }
+
+            await _userManager.SetUserNameAsync(user, Input.UserName);
 
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";

@@ -21,7 +21,7 @@
                     <label asp-for="Email" class="form-label"></label>
                 </div>
             }
-            else
+            else if (!string.IsNullOrWhiteSpace(Model.Email))
             {
                 <div class="form-floating">
                     <input asp-for="Email" class="form-control" disabled />

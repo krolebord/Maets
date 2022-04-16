@@ -1,4 +1,4 @@
-namespace Maets.Models;
+namespace Maets.Models.ViewModels;
 
 public class ErrorViewModel
 {

@@ -15,6 +15,8 @@ public class MaetsDbContext : DbContext
     {
     }
 
+    public DbSet<User> Users { get; set; } = null!;
+
     public DbSet<App> Apps { get; set; } = null!;
 
     public DbSet<AppScreenshot> AppScreenshots { get; set; } = null!;
@@ -218,6 +220,4 @@ public class MaetsDbContext : DbContext
                 .HasConstraintName("employees_companyid_foreign");
         });
     }
-
-    public DbSet<Maets.Domain.Entities.User> User { get; set; }
 }

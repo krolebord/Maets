@@ -1,6 +1,4 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Maets.Models;
 
 namespace Maets.Controllers;
 

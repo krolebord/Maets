@@ -1,10 +1,21 @@
 ﻿@model string
 
-@if (!String.IsNullOrEmpty(Model))
+@if (!string.IsNullOrEmpty(Model))
 {
-    var statusMessageClass = Model.StartsWith("Error") ? "danger" : "success";
+    var formattedModel = Model;
+    var statusMessageClass = "success";
+    if (Model.StartsWith("Error"))
+    {
+        statusMessageClass = "danger";
+        formattedModel = Model.Replace("Error", "").TrimStart();
+    }
+    else if (Model.StartsWith("Warning"))
+    {
+        statusMessageClass = "warning";
+        formattedModel = Model.Replace("Warning", "").TrimStart();
+    }
     <div class="alert alert-@statusMessageClass alert-dismissible" role="alert">
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        @Model
+        @formattedModel
     </div>
 }

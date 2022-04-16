@@ -1,9 +1,11 @@
 using System.Net.Mail;
+using Maets.Attributes;
 using Microsoft.AspNetCore.Identity.UI.Services;
 
-namespace Maets.Services;
+namespace Maets.Services.Implementations;
 
-public class EmailSender : IEmailSender
+[Dependency(Lifetime = ServiceLifetime.Transient, Exposes = typeof(IEmailSender))]
+internal class EmailSender : IEmailSender
 {
     private readonly string _displayName;
     private readonly Lazy<SmtpClient> _client;

@@ -1,11 +1,13 @@
 using System.Net;
 using System.Net.Mail;
+using Maets.Attributes;
 using Maets.Options;
 using Microsoft.Extensions.Options;
 
-namespace Maets.Services;
+namespace Maets.Services.Implementations;
 
-public class SmtpClientFactory : ISmtpClientFactory
+[Dependency(Lifetime = ServiceLifetime.Singleton, Exposes = typeof(ISmtpClientFactory))]
+internal class SmtpClientFactory : ISmtpClientFactory
 {
     private readonly MailOptions _mailOptions;
 
