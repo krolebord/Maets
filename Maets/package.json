@@ -15,10 +15,14 @@
     "jquery": "^3.6.0",
     "jquery-validation": "^1.19.3",
     "jquery-validation-unobtrusive": "^3.2.12",
-    "popper.js": "^2.0.0-next.4"
+    "popper.js": "^2.0.0-next.4",
+    "select2": "^4.1.0-rc.0",
+    "select2-bootstrap-5-theme": "^1.2.0"
   },
   "devDependencies": {
     "gulp": "^4.0.2",
-    "gulp-concat": "^2.6.1"
+    "gulp-clean-css": "^4.3.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-uglify-es": "^3.0.0"
   }
 }

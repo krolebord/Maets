@@ -52,3 +52,5 @@ img.avatar {
     max-width: 100%;
     height: 32px;
 }
+
+select.search-select {}
