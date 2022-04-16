@@ -1,20 +1,21 @@
 using Maets.Domain.Constants;
+using Maets.Domain.Entities.Identity;
 using Maets.Domain.Seed.Common;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Maets.Domain.Seed;
 
-public class RolesSeedData : SeedData<IdentityRole>
+public class RolesSeedData : SeedData<ApplicationRole>
 {
-    protected override Task<bool> CheckIfInDatabaseAsync(DbSet<IdentityRole> set, IdentityRole entity)
+    protected override Task<bool> CheckIfInDatabaseAsync(DbSet<ApplicationRole> set, ApplicationRole entity)
     {
         return set.AnyAsync(x => x.Name == entity.Name);
     }
 
-    protected override Task<IEnumerable<IdentityRole>> GetEntities(DbContext context)
+    protected override Task<IEnumerable<ApplicationRole>> GetEntities(DbContext context)
     {
-        return Task.FromResult(new IdentityRole[]
+        return Task.FromResult(new ApplicationRole[]
         {
             new(RoleNames.Admin),
             new(RoleNames.Developer)

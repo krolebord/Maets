@@ -5,6 +5,8 @@ namespace Maets.Services.Identity;
 
 public interface IUsersService
 {
+    Task<IEnumerable<UserForAdminDto>> GetForAdmin();
+
     Task<UserReadDto?> Find(Guid userId);
     Task<IdentityResult> CreateUser(UserWriteDto userWriteDto, string password);
     Task UpdateUserName(Guid userId, string newUserName);

@@ -1,44 +1,32 @@
 using Maets.Data;
-using Maets.Domain.Entities;
+using Maets.Domain.Constants;
+using Maets.Models.Dtos.User;
+using Maets.Services.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace Maets.Controllers
 {
+    [Authorize(Roles = RoleNames.Admin)]
     public class Users : Controller
     {
+        private readonly IUsersService _usersService;
         private readonly MaetsDbContext _context;
 
-        public Users(MaetsDbContext context)
+        public Users(MaetsDbContext context, IUsersService usersService)
         {
             _context = context;
+            _usersService = usersService;
         }
 
         // GET: Users
         public async Task<IActionResult> Index()
         {
-            var maetsDbContext = _context.Users.Include(u => u.Avatar);
-            return View(await maetsDbContext.ToListAsync());
-        }
+            var users = await _usersService.GetForAdmin();
 
-        // GET: Users/Details/5
-        public async Task<IActionResult> Details(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var user = await _context.Users
-                .Include(u => u.Avatar)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            return View(user);
+            return View(users);
         }
 
         // GET: Users/Create
@@ -49,21 +37,16 @@ namespace Maets.Controllers
         }
 
         // POST: Users/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("UserName,AvatarId,Id")] User user)
+        public async Task<IActionResult> Create(UserWriteDto user)
         {
-            if (ModelState.IsValid)
-            {
-                user.Id = Guid.NewGuid();
-                _context.Add(user);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["AvatarId"] = new SelectList(_context.MediaFiles, "Id", "Id", user.AvatarId);
-            return View(user);
+            if (!ModelState.IsValid)
+                return View(user);
+
+            await _usersService.CreateUser(user, user.UserName);
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Users/Edit/5
@@ -79,44 +62,21 @@ namespace Maets.Controllers
             {
                 return NotFound();
             }
-            ViewData["AvatarId"] = new SelectList(_context.MediaFiles, "Id", "Id", user.AvatarId);
-            return View(user);
+
+            return View(new UserWriteDto(user.UserName));
         }
 
         // POST: Users/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("UserName,AvatarId,Id")] User user)
+        public async Task<IActionResult> Edit(Guid id, UserWriteDto user)
         {
-            if (id != user.Id)
-            {
-                return NotFound();
-            }
+            if (!ModelState.IsValid)
+                return View(user);
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(user);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UserExists(user.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["AvatarId"] = new SelectList(_context.MediaFiles, "Id", "Id", user.AvatarId);
-            return View(user);
+            await _usersService.UpdateUserName(id, user.UserName);
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Users/Delete/5
@@ -127,9 +87,8 @@ namespace Maets.Controllers
                 return NotFound();
             }
 
-            var user = await _context.Users
-                .Include(u => u.Avatar)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var user = await _usersService.Find(id.Value);
+
             if (user == null)
             {
                 return NotFound();
@@ -144,17 +103,13 @@ namespace Maets.Controllers
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var user = await _context.Users.FindAsync(id);
-            if (user is not null)
-            {
-                _context.Users.Remove(user);
-                await _context.SaveChangesAsync();
-            }
-            return RedirectToAction(nameof(Index));
-        }
 
-        private bool UserExists(Guid id)
-        {
-            return _context.Users.Any(e => e.Id == id);
+            if (user is null)
+                return RedirectToAction(nameof(Index));
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
     }
 }

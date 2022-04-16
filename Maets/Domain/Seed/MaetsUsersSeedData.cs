@@ -17,17 +17,17 @@ public class MaetsUsersData : SeedData<User>
         {
             new()
             {
-                Id = Guid.Parse(DefaultUserData.Admin.Id),
+                Id = DefaultUserData.Admin.Id,
                 UserName = DefaultUserData.Admin.UserName
             },
             new()
             {
-                Id = Guid.Parse(DefaultUserData.Dev.Id),
+                Id = DefaultUserData.Dev.Id,
                 UserName = DefaultUserData.Dev.UserName
             },
             new()
             {
-                Id = Guid.Parse(DefaultUserData.User.Id),
+                Id = DefaultUserData.User.Id,
                 UserName = DefaultUserData.User.UserName
             }
         };

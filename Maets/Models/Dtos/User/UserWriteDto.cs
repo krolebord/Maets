@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Maets.Models.Dtos.User;
 
-public record UserWriteDto
+public class UserWriteDto
 {
     [Required]
     public string UserName { get; set; }
@@ -11,6 +11,11 @@ public record UserWriteDto
     public string? Email { get; set; }
 
     public Guid? AvatarId { get; set; }
+
+    public UserWriteDto()
+    {
+        UserName = string.Empty;
+    }
 
     public UserWriteDto(string userName)
     {

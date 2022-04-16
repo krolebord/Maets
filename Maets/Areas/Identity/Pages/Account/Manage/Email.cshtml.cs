@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.ComponentModel.DataAnnotations;
+using Maets.Domain.Entities.Identity;
 using Maets.Services;
 using Maets.Services.Identity;
 using Microsoft.AspNetCore.Identity;
@@ -13,11 +14,11 @@ namespace Maets.Areas.Identity.Pages.Account.Manage
 {
     public class EmailModel : PageModel
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUsersService _usersService;
 
         public EmailModel(
-            UserManager<IdentityUser> userManager,
+            UserManager<ApplicationUser> userManager,
             IUsersService usersService)
         {
             _userManager = userManager;
@@ -47,7 +48,7 @@ namespace Maets.Areas.Identity.Pages.Account.Manage
             public string? NewEmail { get; set; }
         }
 
-        private async Task LoadAsync(IdentityUser user)
+        private async Task LoadAsync(ApplicationUser user)
         {
             var email = await _userManager.GetEmailAsync(user);
             Email = email;

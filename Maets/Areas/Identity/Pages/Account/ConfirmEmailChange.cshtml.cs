@@ -1,6 +1,7 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Maets.Domain.Entities.Identity;
 using Maets.Services;
 using Maets.Services.Identity;
 using Microsoft.AspNetCore.Identity;
@@ -12,10 +13,10 @@ namespace Maets.Areas.Identity.Pages.Account
     public class ConfirmEmailChangeModel : PageModel
     {
         private readonly IUsersService _usersService;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public ConfirmEmailChangeModel(SignInManager<IdentityUser> signInManager, IUsersService usersService, UserManager<IdentityUser> userManager)
+        public ConfirmEmailChangeModel(SignInManager<ApplicationUser> signInManager, IUsersService usersService, UserManager<ApplicationUser> userManager)
         {
             _signInManager = signInManager;
             _usersService = usersService;

@@ -18,7 +18,7 @@ public class ReviewsSeedData : SeedData<Review>
     protected override async Task<IEnumerable<Review>> GetEntities(DbContext context)
     {
         var author = await context.Set<User>()
-            .FirstAsync(x => x.Id.ToString() == DefaultUserData.User.Id);
+            .FirstAsync(x => x.Id == DefaultUserData.User.Id);
 
         var app = await context.Set<App>()
             .FirstAsync(x => x.Title == AppsSeedData.DefaultAppTitle);

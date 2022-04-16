@@ -3,6 +3,7 @@ using System.Text.Encodings.Web;
 using Maets.Attributes;
 using Maets.Data;
 using Maets.Domain.Entities;
+using Maets.Domain.Entities.Identity;
 using Maets.Extensions;
 using Maets.Models.Dtos.User;
 using Maets.Models.Exceptions;
@@ -20,8 +21,9 @@ namespace Maets.Services.Identity.Implementations;
 [Dependency(Lifetime = ServiceLifetime.Scoped, Exposes = typeof(IUsersService))]
 internal class UsersService : IUsersService
 {
+    private readonly AuthDbContext _authDbContext;
     private readonly MaetsDbContext _maetsDbContext;
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<ApplicationUser> _userManager;
     private readonly IUrlHelper _urlHelper;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IEmailSender _emailSender;
@@ -30,11 +32,12 @@ internal class UsersService : IUsersService
 
     public UsersService(
         MaetsDbContext maetsDbContext,
-        UserManager<IdentityUser> userManager,
+        UserManager<ApplicationUser> userManager,
         IHttpContextAccessor httpContextAccessor,
         IEmailSender emailSender,
         IFileReadService fileReadService,
-        IFileWriteService fileWriteService)
+        IFileWriteService fileWriteService,
+        AuthDbContext authDbContext)
     {
         _maetsDbContext = maetsDbContext;
         _userManager = userManager;
@@ -42,8 +45,34 @@ internal class UsersService : IUsersService
         _emailSender = emailSender;
         _fileReadService = fileReadService;
         _fileWriteService = fileWriteService;
+        _authDbContext = authDbContext;
         _urlHelper = new UrlHelper(new ActionContext(_httpContextAccessor.HttpContext!, new RouteData(), new ActionDescriptor()));
     }
+
+    public async Task<IEnumerable<UserForAdminDto>> GetForAdmin()
+    {
+        var users = await _maetsDbContext.Users
+            .Include(x => x.Avatar)
+            .ToListAsync();
+
+        var identityUsers = await _authDbContext.Users
+            .Include(x => x.Roles)
+            .ToListAsync();
+
+        return users.Join(
+            identityUsers,
+            user => user.Id.ToString(),
+            identityUser => identityUser.Id,
+            (user, applicationUser) => new UserForAdminDto(
+                user.Id,
+                user.UserName,
+                applicationUser.Email,
+                GetAvatarUrl(user.Avatar),
+                applicationUser.Roles.Select(x => x.Name).ToArray()
+            )
+        );
+    }
+
     public async Task<UserReadDto?> Find(Guid userId)
     {
         var user = await _maetsDbContext.Users
@@ -60,8 +89,7 @@ internal class UsersService : IUsersService
         return new UserReadDto(
             user.Id,
             user.UserName,
-            identityUser.Email,
-            string.Empty // TODO Add media files url provider
+            GetAvatarUrl(user.Avatar)
         );
     }
 
@@ -69,7 +97,7 @@ internal class UsersService : IUsersService
     {
         var userId = Guid.NewGuid();
 
-        var identityUser = new IdentityUser
+        var identityUser = new ApplicationUser()
         {
             Id = userId.ToString(),
             UserName = userWriteDto.UserName,
@@ -155,6 +183,13 @@ internal class UsersService : IUsersService
         return avatarKey is null
             ? "/assets/blank-avatar.jpg"
             : _fileReadService.GetPublicUrl(avatarKey);
+    }
+
+    private string GetAvatarUrl(MediaFile? avatarFile)
+    {
+        return avatarFile?.Key is null
+            ? "/assets/blank-avatar.jpg"
+            : _fileReadService.GetPublicUrl(avatarFile.Key);
     }
 
     public async Task SendEmailConfirmation(Guid userId)

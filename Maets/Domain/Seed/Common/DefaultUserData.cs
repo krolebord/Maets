@@ -1,9 +1,6 @@
 namespace Maets.Domain.Seed.Common;
 
-public record DefaultUserData(
-    string Id,
-    string UserName
-)
+public record DefaultUserData
 {
     public static readonly DefaultUserData Admin =
         new ("0172a401-f197-4315-a760-a16c16d7b882", "Admin");
@@ -13,4 +10,15 @@ public record DefaultUserData(
 
     public static readonly DefaultUserData User =
         new ("4313a59d-1828-4460-b6a6-6e27a19ad130", "User");
+
+    public DefaultUserData(
+        string id,
+        string userName)
+    {
+        Id = Guid.Parse(id);
+        UserName = userName;
+    }
+
+    public Guid Id { get; init; }
+    public string UserName { get; init; }
 }

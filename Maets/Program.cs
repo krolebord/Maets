@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Maets.Data;
+using Maets.Domain.Entities.Identity;
 using Maets.Extensions;
 using Maets.Options;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,12 +23,12 @@ builder.Services.AddDbContext<MaetsDbContext>(options =>
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
     {
         options.User.RequireUniqueEmail = false;
         options.SignIn.RequireConfirmedEmail = false;
         options.SignIn.RequireConfirmedAccount = false;
-        options.Password.RequireDigit = true;
+        options.Password.RequireDigit = false;
         options.Password.RequiredLength = 6;
         options.Password.RequireLowercase = false;
         options.Password.RequireUppercase = false;
@@ -34,6 +36,12 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
     })
     .AddDefaultTokenProviders()
     .AddEntityFrameworkStores<AuthDbContext>();
+
+builder.Services.ConfigureApplicationCookie(options =>
+    {
+        options.LoginPath = new PathString("/Identity/Account/Login");
+        options.AccessDeniedPath = new PathString("/Identity/Account/AccessDenied");
+    });
 
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();

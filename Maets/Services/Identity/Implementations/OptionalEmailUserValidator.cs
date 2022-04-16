@@ -1,15 +1,16 @@
 using Maets.Attributes;
+using Maets.Domain.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
 
 namespace Maets.Services.Identity.Implementations;
 
-[Dependency(Lifetime = ServiceLifetime.Transient, Exposes = typeof(IUserValidator<IdentityUser>))]
-public class OptionalEmailUserValidator : UserValidator<IdentityUser>
+[Dependency(Lifetime = ServiceLifetime.Transient, Exposes = typeof(IUserValidator<ApplicationUser>))]
+public class OptionalEmailUserValidator : UserValidator<ApplicationUser>
 {
     public OptionalEmailUserValidator(IdentityErrorDescriber? errors = null)
         : base(errors) {}
 
-    public override async Task<IdentityResult> ValidateAsync(UserManager<IdentityUser> manager, IdentityUser user)
+    public override async Task<IdentityResult> ValidateAsync(UserManager<ApplicationUser> manager, ApplicationUser user)
     {
         var result = await base.ValidateAsync(manager, user);
 

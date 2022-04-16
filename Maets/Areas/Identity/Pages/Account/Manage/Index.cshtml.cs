@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.ComponentModel.DataAnnotations;
+using Maets.Domain.Entities.Identity;
 using Maets.Extensions;
 using Maets.Services.Identity;
 using Microsoft.AspNetCore.Identity;
@@ -13,12 +14,12 @@ namespace Maets.Areas.Identity.Pages.Account.Manage
     public class IndexModel : PageModel
     {
         private readonly IUsersService _usersService;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
         public IndexModel(
-            UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager,
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
             IUsersService usersService
         )
         {
@@ -52,7 +53,7 @@ namespace Maets.Areas.Identity.Pages.Account.Manage
             public IFormFile? Avatar { get; set; }
         }
 
-        private async Task LoadAsync(IdentityUser user)
+        private async Task LoadAsync(ApplicationUser user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
 

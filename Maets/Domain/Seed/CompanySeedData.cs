@@ -25,7 +25,7 @@ public class CompanySeedData : SeedData<Company>
         };
 
         var dev = await context.Set<User>()
-            .FirstAsync(x => x.Id.ToString() == DefaultUserData.Dev.Id);
+            .FirstAsync(x => x.Id == DefaultUserData.Dev.Id);
 
         company.Employees.Add(new()
         {

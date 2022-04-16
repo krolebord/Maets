@@ -1,6 +1,7 @@
 @using Microsoft.AspNetCore.Identity
 @using Maets.Extensions
-@inject SignInManager<IdentityUser> SignInManager
+@using Maets.Domain.Entities.Identity
+@inject SignInManager<ApplicationUser> SignInManager
 
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))

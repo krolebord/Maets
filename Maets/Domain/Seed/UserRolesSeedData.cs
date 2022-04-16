@@ -1,4 +1,5 @@
 using Maets.Domain.Constants;
+using Maets.Domain.Entities.Identity;
 using Maets.Domain.Seed.Common;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -16,11 +17,11 @@ public class UserRolesSeedData : SeedData<IdentityUserRole<string>>
 
     protected override async Task<IEnumerable<IdentityUserRole<string>>> GetEntities(DbContext context)
     {
-        var usersSet = context.Set<IdentityUser>();
-        var adminId = await usersSet.Select(x => x.Id).FirstAsync(x => x == DefaultUserData.Admin.Id);
-        var devId = await usersSet.Select(x => x.Id).FirstAsync(x => x == DefaultUserData.Dev.Id);
+        var usersSet = context.Set<ApplicationUser>();
+        var adminId = await usersSet.Select(x => x.Id).FirstAsync(x => x == DefaultUserData.Admin.Id.ToString());
+        var devId = await usersSet.Select(x => x.Id).FirstAsync(x => x == DefaultUserData.Dev.Id.ToString());
 
-        var rolesSet = context.Set<IdentityRole>();
+        var rolesSet = context.Set<ApplicationRole>();
         var adminRoleId = (await rolesSet.FirstAsync(x => x.Name == RoleNames.Admin)).Id;
         var devRoleId = (await rolesSet.FirstAsync(x => x.Name == RoleNames.Developer)).Id;
 
