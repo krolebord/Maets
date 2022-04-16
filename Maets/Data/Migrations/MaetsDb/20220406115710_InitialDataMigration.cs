@@ -82,7 +82,7 @@ public partial class InitialDataMigration : Migration
                     ""UserName"" NVARCHAR(255) NOT NULL,
                     ""AvatarId"" UNIQUEIDENTIFIER NULL,
                     CONSTRAINT ""users_id_primary"" PRIMARY KEY (Id),
-                    CONSTRAINT ""users_avatarid_foreign"" FOREIGN KEY (""AvatarId"") REFERENCES ""MediaFiles""(""Id"") ON DELETE CASCADE
+                    CONSTRAINT ""users_avatarid_foreign"" FOREIGN KEY (""AvatarId"") REFERENCES ""MediaFiles""(""Id"") ON DELETE SET NULL
                 );
 
                 CREATE UNIQUE INDEX ""users_username_unique""

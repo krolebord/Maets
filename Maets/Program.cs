@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using Maets.Data;
 using Maets.Extensions;
 using Maets.Options;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOptions<MailOptions>().BindConfiguration("MailOptions");
+builder.Services.AddOptions<LocalFilesStorageOptions>().BindConfiguration(LocalFilesStorageOptions.ConfigurationKey);
 
 // Add services to the container.
 var authConnectionString = builder.Configuration.GetConnectionString("AuthConnection");
@@ -60,6 +62,17 @@ else
 }
 
 app.UseHttpsRedirection();
+
+var resourcesPath = app.Configuration[LocalFilesStorageOptions.ResourcesPathKey];
+var resourcesFolder = Path.Combine(app.Environment.ContentRootPath, resourcesPath);
+Directory.CreateDirectory(resourcesFolder);
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(resourcesFolder),
+    RequestPath = "/" + resourcesPath
+});
+
 app.UseStaticFiles();
 
 app.UseRouting();

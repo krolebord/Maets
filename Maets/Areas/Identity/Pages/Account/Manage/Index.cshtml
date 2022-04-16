@@ -9,14 +9,25 @@
 <partial name="_StatusMessage" for="StatusMessage" />
 <div class="row">
     <div class="col-md-6">
-        <form id="profile-form" method="post">
+        <form asp-page-handler="UserNameChange" id="profile-form" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-floating">
-                <input asp-for="Input.UserName" class="form-control" />
-                <label asp-for="Input.UserName" class="form-label"></label>
-                <span asp-validation-for="Input.UserName" class="text-danger"></span>
+                <input asp-for="UserNameInput.UserName" class="form-control" />
+                <label asp-for="UserNameInput.UserName" class="form-label"></label>
+                <span asp-validation-for="UserNameInput.UserName" class="text-danger"></span>
             </div>
-            <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
+            <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Change user name</button>
+        </form>
+        <hr />
+        <h4>Avatar</h4>
+        <form asp-page-handler="AvatarChange" enctype="multipart/form-data" method="post" class="d-flex align-items-center">
+            <div class="flex-grow-1" style="flex-basis: 50px; min-width: 100px; max-width: 175px">
+                <img src="@Model.AvatarUrl" alt="avatar" class="img-thumbnail"/>
+            </div>
+            <div class="flex-grow-2 ms-1">
+                <input asp-for="AvatarInput.Avatar" class="form-control mb-2" type="file" accept="image/*" id="avatarFile">
+                <button id="update-avatar-button" type="submit" class="w-100 btn btn-lg btn-primary">Change avatar</button>
+            </div>
         </form>
     </div>
 </div>

@@ -4,6 +4,7 @@
 using System.ComponentModel.DataAnnotations;
 using Maets.Models.Dtos.User;
 using Maets.Services;
+using Maets.Services.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -41,7 +42,7 @@ namespace Maets.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required]
-            [StringLength(64, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [StringLength(64, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 5)]
             [Display(Name = "User name")]
             public string UserName { get; set; } = string.Empty;
 
@@ -101,7 +102,7 @@ namespace Maets.Areas.Identity.Pages.Account
                 return Page();
             }
 
-            _logger.LogInformation("User created a new account with password.");
+            _logger.LogInformation("User created a new account with password");
 
             var user = await _userManager.FindByNameAsync(Input.UserName);
             await _signInManager.SignInAsync(user, isPersistent: true);

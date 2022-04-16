@@ -20,11 +20,11 @@
             @Html.DisplayNameFor(model => model.Avatar)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Avatar.Id)
+            @Html.DisplayFor(model => model.AvatarId)
         </dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>

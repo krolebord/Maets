@@ -1,7 +1,7 @@
 using Maets.Attributes;
 using Microsoft.AspNetCore.Identity;
 
-namespace Maets.Services.Implementations;
+namespace Maets.Services.Identity.Implementations;
 
 [Dependency(Lifetime = ServiceLifetime.Transient, Exposes = typeof(IUserValidator<IdentityUser>))]
 public class OptionalEmailUserValidator : UserValidator<IdentityUser>

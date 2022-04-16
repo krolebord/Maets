@@ -197,7 +197,7 @@ public class MaetsDbContext : DbContext
             entity.HasOne(d => d.Avatar)
                 .WithMany()
                 .HasForeignKey(d => d.AvatarId)
-                .OnDelete(DeleteBehavior.Cascade)
+                .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("users_avatarid_foreign");
         });
 

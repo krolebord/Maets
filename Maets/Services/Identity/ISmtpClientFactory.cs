@@ -1,6 +1,6 @@
 using System.Net.Mail;
 
-namespace Maets.Services;
+namespace Maets.Services.Identity;
 
 public interface ISmtpClientFactory
 {

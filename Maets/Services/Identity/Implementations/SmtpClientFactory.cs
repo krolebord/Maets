@@ -4,7 +4,7 @@ using Maets.Attributes;
 using Maets.Options;
 using Microsoft.Extensions.Options;
 
-namespace Maets.Services.Implementations;
+namespace Maets.Services.Identity.Implementations;
 
 [Dependency(Lifetime = ServiceLifetime.Singleton, Exposes = typeof(ISmtpClientFactory))]
 internal class SmtpClientFactory : ISmtpClientFactory

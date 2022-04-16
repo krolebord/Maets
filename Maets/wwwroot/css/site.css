@@ -21,14 +21,34 @@ form .form-floating {
     margin: 0.5rem 0;
 }
 
-@media all and (min-width: 992px) {
-    .navbar .nav-item .dropdown-menu{
+@media all and (min-width: 768px) {
+    .navbar .nav-item .dropdown-menu {
         display: none;
     }
-    .navbar .nav-item:hover .dropdown-menu{
+    .navbar .nav-item:hover .dropdown-menu {
         display: block;
     }
-    .navbar .nav-item .dropdown-menu{
-        margin-top:0;
+    .navbar .nav-item .dropdown-menu {
+        margin-top: 0;
     }
+}
+
+@media all and (max-width: 767px) {
+    .navbar .nav-item .dropdown-menu {
+        display: block;
+        margin-top: 0;
+        background-color: transparent;
+        border: none;
+    }
+}
+
+img.avatar {
+    object-fit: cover;
+    padding: 0;
+    width: 32px;
+    background-color: #0f2537;
+    border: 1px solid #dee2e6;
+    border-radius: 0;
+    max-width: 100%;
+    height: 32px;
 }

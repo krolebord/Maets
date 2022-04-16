@@ -9,5 +9,6 @@ public interface ISeedData
     public Task ApplyAsync(DbContext context);
 }
 
+// ReSharper disable once UnusedTypeParameter
 public interface ISeedData<TEntity> : ISeedData where TEntity : class
 {}

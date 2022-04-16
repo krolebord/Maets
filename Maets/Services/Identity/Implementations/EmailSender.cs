@@ -2,7 +2,7 @@ using System.Net.Mail;
 using Maets.Attributes;
 using Microsoft.AspNetCore.Identity.UI.Services;
 
-namespace Maets.Services.Implementations;
+namespace Maets.Services.Identity.Implementations;
 
 [Dependency(Lifetime = ServiceLifetime.Transient, Exposes = typeof(IEmailSender))]
 internal class EmailSender : IEmailSender

@@ -3,6 +3,7 @@
 
 using System.ComponentModel.DataAnnotations;
 using Maets.Services;
+using Maets.Services.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -17,8 +18,6 @@ namespace Maets.Areas.Identity.Pages.Account.Manage
 
         public EmailModel(
             UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager,
-            IEmailSender emailSender,
             IUsersService usersService)
         {
             _userManager = userManager;
@@ -53,10 +52,7 @@ namespace Maets.Areas.Identity.Pages.Account.Manage
             var email = await _userManager.GetEmailAsync(user);
             Email = email;
 
-            Input = new InputModel
-            {
-                NewEmail = email,
-            };
+            Input = new InputModel();
 
             IsEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
         }

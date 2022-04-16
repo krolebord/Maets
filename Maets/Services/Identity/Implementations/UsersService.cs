@@ -3,8 +3,10 @@ using System.Text.Encodings.Web;
 using Maets.Attributes;
 using Maets.Data;
 using Maets.Domain.Entities;
+using Maets.Extensions;
 using Maets.Models.Dtos.User;
 using Maets.Models.Exceptions;
+using Maets.Services.Files;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +15,7 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Maets.Services.Implementations;
+namespace Maets.Services.Identity.Implementations;
 
 [Dependency(Lifetime = ServiceLifetime.Scoped, Exposes = typeof(IUsersService))]
 internal class UsersService : IUsersService
@@ -23,18 +25,23 @@ internal class UsersService : IUsersService
     private readonly IUrlHelper _urlHelper;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IEmailSender _emailSender;
+    private readonly IFileReadService _fileReadService;
+    private readonly IFileWriteService _fileWriteService;
 
     public UsersService(
         MaetsDbContext maetsDbContext,
         UserManager<IdentityUser> userManager,
         IHttpContextAccessor httpContextAccessor,
-        IEmailSender emailSender
-    )
+        IEmailSender emailSender,
+        IFileReadService fileReadService,
+        IFileWriteService fileWriteService)
     {
         _maetsDbContext = maetsDbContext;
         _userManager = userManager;
         _httpContextAccessor = httpContextAccessor;
         _emailSender = emailSender;
+        _fileReadService = fileReadService;
+        _fileWriteService = fileWriteService;
         _urlHelper = new UrlHelper(new ActionContext(_httpContextAccessor.HttpContext!, new RouteData(), new ActionDescriptor()));
     }
     public async Task<UserReadDto?> Find(Guid userId)
@@ -90,6 +97,64 @@ internal class UsersService : IUsersService
         await _maetsDbContext.SaveChangesAsync();
 
         return result;
+    }
+
+    public async Task UpdateUserName(Guid userId, string newUserName)
+    {
+        var identityUser = await _userManager.FindByIdAsync(userId.ToString());
+
+        if (identityUser is null)
+        {
+            throw new NotFoundException<User>();
+        }
+
+        await _userManager.SetUserNameAsync(identityUser, newUserName);
+
+        var user = await _maetsDbContext.Users.FirstAsync(x => x.Id == userId);
+        user.UserName = newUserName;
+        await _maetsDbContext.SaveChangesAsync();
+    }
+
+    public async Task UpdateUserAvatar(Guid userId, IFormFile avatarFile)
+    {
+        var user = await _maetsDbContext.Users
+            .Include(x => x.Avatar)
+            .FirstOrNotFound(x => x.Id == userId);
+
+        if (user.Avatar is not null)
+        {
+            await _fileWriteService.DeleteFileAsync(user.Avatar);
+        }
+
+        var avatarKey = $"{user.UserName}-avatar-{Guid.NewGuid()}.png";
+        user.Avatar = await _fileWriteService.UploadFileAsync(avatarKey, avatarFile.OpenReadStream());
+
+        await _maetsDbContext.SaveChangesAsync();
+    }
+
+    public async Task DeleteUser(Guid userId)
+    {
+        var identityUser = await _userManager.FindByIdAsync(userId.ToString());
+        if (identityUser is not null)
+        {
+            await _userManager.DeleteAsync(identityUser);
+        }
+
+        _maetsDbContext.Users.Remove(new User { Id = userId });
+        await _maetsDbContext.SaveChangesAsync();
+    }
+
+    public async Task<string> GetAvatarUrl(Guid userId)
+    {
+        var avatarKey = await _maetsDbContext.Users
+            .Include(x => x.Avatar)
+            .Where(x => x.Id == userId && x.Avatar != null)
+            .Select(x => x.Avatar!.Key)
+            .FirstOrDefaultAsync();
+
+        return avatarKey is null
+            ? "/assets/blank-avatar.jpg"
+            : _fileReadService.GetPublicUrl(avatarKey);
     }
 
     public async Task SendEmailConfirmation(Guid userId)
@@ -177,17 +242,5 @@ internal class UsersService : IUsersService
 
         code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
         return await _userManager.ChangeEmailAsync(user, email, code);
-    }
-
-    public async Task DeleteUser(Guid userId)
-    {
-        var identityUser = await _userManager.FindByIdAsync(userId.ToString());
-        if (identityUser is not null)
-        {
-            await _userManager.DeleteAsync(identityUser);
-        }
-
-        _maetsDbContext.Users.Remove(new User { Id = userId });
-        await _maetsDbContext.SaveChangesAsync();
     }
 }
