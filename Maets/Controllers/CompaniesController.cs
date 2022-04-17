@@ -1,12 +1,14 @@
-#nullable disable
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Maets.Data;
+using Maets.Domain.Constants;
 using Maets.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Maets.Controllers;
 
+[Authorize(Roles = RoleNames.Admin)]
 public class CompaniesController : MaetsController
 {
     private readonly MaetsDbContext _context;

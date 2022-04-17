@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Maets.Controllers
 {
     [Authorize(Roles = RoleNames.Admin)]
-    public class Users : Controller
+    public class Users : MaetsController
     {
         private readonly IUsersService _usersService;
         private readonly MaetsDbContext _context;

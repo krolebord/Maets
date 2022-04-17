@@ -4,6 +4,7 @@ const cleanCSS = require('gulp-clean-css');
 const uglify = require('gulp-uglify-es').default;
 
 const vendorStyles = [
+    "node_modules/@fortawesome/fontawesome-free/css/all.css",
     "node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker.css",
     "node_modules/select2/dist/css/select2.css",
     "wwwroot/css/bootstrap.css",

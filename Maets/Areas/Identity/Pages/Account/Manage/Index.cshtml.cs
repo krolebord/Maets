@@ -93,13 +93,15 @@ namespace Maets.Areas.Identity.Pages.Account.Manage
 
             if (string.IsNullOrWhiteSpace(UserNameInput.UserName) || UserNameInput.UserName == user.UserName)
             {
-                StatusMessage = "Warning Your email is unchanged.";
+                StatusMessage = "Warning Your user name is unchanged.";
+                await LoadAsync(user);
                 return Page();
             }
 
             if (await _userManager.FindByNameAsync(UserNameInput.UserName) is not null)
             {
                 StatusMessage = "Error This user name is already taken";
+                await LoadAsync(user);
                 return Page();
             }
 
@@ -116,12 +118,6 @@ namespace Maets.Areas.Identity.Pages.Account.Manage
             if (user == null)
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                await LoadAsync(user);
-                return Page();
             }
 
             if (AvatarInput.Avatar is null)

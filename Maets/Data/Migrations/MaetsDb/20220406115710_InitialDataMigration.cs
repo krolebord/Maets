@@ -90,7 +90,7 @@ public partial class InitialDataMigration : Migration
 
                 CREATE TABLE ""CompanyEmployees""(
                     ""Id"" UNIQUEIDENTIFIER not null,
-                    ""UserId"" UNIQUEIDENTIFIER not null,
+                    ""UserId"" UNIQUEIDENTIFIER not null unique,
                     ""CompanyId"" UNIQUEIDENTIFIER not null,
                     constraint ""employees_id_primary"" PRIMARY KEY (Id),
                     constraint ""employees_userid_foreign"" FOREIGN KEY (""UserId"") REFERENCES ""Users""(""Id"") ON DELETE CASCADE,
