@@ -6,11 +6,11 @@
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
     {
-        <li class="nav-item dropdown d-flex">
-            <a class="nav-link d-flex flex-row flex-nowrap align-items-center py-0"
-               asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
-                <img src="@User.GetAvatarUrl()" alt="user avatar" class="avatar me-1"/>
-                @User.Identity?.Name
+        <li class="nav-item dropdown">
+            <a class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
+                <div class="d-flex flex-row flex-nowrap align-items-center py-0">
+                    <img src="@User.GetAvatarUrl()" alt="user avatar" class="avatar me-1"/> @User.Identity?.Name
+                </div>
             </a>
             <ul class="dropdown-menu" style="margin-top: 32px">
                 <li>

@@ -1,0 +1,63 @@
+@using Microsoft.AspNetCore.Html
+@model Maets.Models.ViewModels.TableViewModel
+
+@{
+    var items = Model.GetItems().ToArray();
+    var columns = Model.GetColumns().ToArray();
+}
+
+<div class="table-responsive">
+<table class="table">
+    <thead>
+    <tr>
+        @foreach (var column in columns)
+        {
+            <th>@column.Header</th>
+        }
+        @if (Model.HasActions)
+        {
+            <th/>
+        }
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in items)
+    {
+        <tr>
+            @foreach (var column in columns)
+            {
+                <td>@column.GetDisplay(item)</td>
+            }
+            @if (Model.HasActions)
+            {
+                <td>
+                    <div class="d-flex flex-nowrap flex-row">
+                        @if (Model.CanEdit)
+                        {
+                            <a class="btn btn-sm btn-primary mx-1 flex-grow-1" asp-action="Edit" asp-route-id="@Model.GetItemId(item)">Edit</a>
+                        }
+                        @if (Model.CanDelete)
+                        {
+                            <a class="btn btn-sm btn-danger mx-1 flex-grow-1" asp-action="Delete" asp-route-id="@Model.GetItemId(item)">Delete</a>
+                        }
+                    </div>
+                </td>
+            }
+        </tr>
+    }
+    @if (Model.CanCreate)
+    {
+        <tr>
+            <td/>
+            <td/>
+            <td/>
+            <td/>
+            <td>
+                <a class="btn btn-sm btn-success w-100 mx-1" asp-action="Create">Create New</a>
+            </td>
+        </tr>
+    }
+
+    </tbody>
+</table>
+</div>
