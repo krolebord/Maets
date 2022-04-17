@@ -3,7 +3,7 @@
 
 using System.ComponentModel.DataAnnotations;
 using Maets.Domain.Entities.Identity;
-using Maets.Models.Dtos.User;
+using Maets.Models.Dtos.Users;
 using Maets.Services;
 using Maets.Services.Identity;
 using Microsoft.AspNetCore.Identity;

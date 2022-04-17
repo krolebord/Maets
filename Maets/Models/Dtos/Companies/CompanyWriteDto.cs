@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Maets.Models.Dtos.Company;
+namespace Maets.Models.Dtos.Companies;
 
 public class CompanyWriteDto
 {

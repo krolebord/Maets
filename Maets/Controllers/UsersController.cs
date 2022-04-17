@@ -1,11 +1,11 @@
 using Maets.Data;
 using Maets.Domain.Constants;
-using Maets.Models.Dtos.User;
+using Maets.Extensions;
+using Maets.Models.Dtos.Users;
 using Maets.Services.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 
 namespace Maets.Controllers
 {
@@ -102,6 +102,11 @@ namespace Maets.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
+            if (User.GetId() == id)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
             var user = await _context.Users.FindAsync(id);
 
             if (user is null)

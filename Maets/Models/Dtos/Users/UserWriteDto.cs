@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Maets.Models.Dtos.User;
+namespace Maets.Models.Dtos.Users;
 
 public class UserWriteDto
 {

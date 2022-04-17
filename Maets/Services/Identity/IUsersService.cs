@@ -1,4 +1,4 @@
-using Maets.Models.Dtos.User;
+using Maets.Models.Dtos.Users;
 using Microsoft.AspNetCore.Identity;
 
 namespace Maets.Services.Identity;

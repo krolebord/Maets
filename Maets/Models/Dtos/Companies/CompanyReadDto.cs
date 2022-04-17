@@ -1,4 +1,4 @@
-namespace Maets.Models.Dtos.Company;
+namespace Maets.Models.Dtos.Companies;
 
 public record CompanyReadDto(
     Guid Id,

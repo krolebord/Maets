@@ -9,4 +9,9 @@ public static class ClaimsPrincipalExtensions
     {
         return user.FindFirstValue(MaetsClaims.AvatarUrl);
     }
+
+    public static Guid GetId(this ClaimsPrincipal user)
+    {
+        return Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
+    }
 }

@@ -50,6 +50,7 @@ builder.Services.AddHttpContextAccessor();
 
 var assembly = typeof(Program).Assembly;
 
+builder.Services.AddAutoMapper(assembly);
 builder.Services.AddDependencies(assembly);
 builder.Services.AddSeedData(assembly);
 

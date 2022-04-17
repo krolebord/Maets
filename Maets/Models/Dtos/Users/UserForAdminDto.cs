@@ -1,4 +1,4 @@
-namespace Maets.Models.Dtos.User;
+namespace Maets.Models.Dtos.Users;
 
 public record UserForAdminDto(
     Guid Id,

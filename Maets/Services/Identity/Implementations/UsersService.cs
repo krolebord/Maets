@@ -1,11 +1,12 @@
 using System.Text;
 using System.Text.Encodings.Web;
+using AutoMapper;
 using Maets.Attributes;
 using Maets.Data;
 using Maets.Domain.Entities;
 using Maets.Domain.Entities.Identity;
 using Maets.Extensions;
-using Maets.Models.Dtos.User;
+using Maets.Models.Dtos.Users;
 using Maets.Models.Exceptions;
 using Maets.Services.Files;
 using Microsoft.AspNetCore.Identity;
@@ -29,6 +30,7 @@ internal class UsersService : IUsersService
     private readonly IEmailSender _emailSender;
     private readonly IFileReadService _fileReadService;
     private readonly IFileWriteService _fileWriteService;
+    private readonly IMapper _mapper;
 
     public UsersService(
         MaetsDbContext maetsDbContext,
@@ -37,7 +39,8 @@ internal class UsersService : IUsersService
         IEmailSender emailSender,
         IFileReadService fileReadService,
         IFileWriteService fileWriteService,
-        AuthDbContext authDbContext)
+        AuthDbContext authDbContext,
+        IMapper mapper)
     {
         _maetsDbContext = maetsDbContext;
         _userManager = userManager;
@@ -46,6 +49,7 @@ internal class UsersService : IUsersService
         _fileReadService = fileReadService;
         _fileWriteService = fileWriteService;
         _authDbContext = authDbContext;
+        _mapper = mapper;
         _urlHelper = new UrlHelper(new ActionContext(_httpContextAccessor.HttpContext!, new RouteData(), new ActionDescriptor()));
     }
 
@@ -86,11 +90,7 @@ internal class UsersService : IUsersService
             return null;
         }
 
-        return new UserReadDto(
-            user.Id,
-            user.UserName,
-            _fileReadService.AvatarUrlOrDefault(user.Avatar)
-        );
+        return _mapper.Map<UserReadDto>(user);
     }
 
     public async Task<IdentityResult> CreateUser(UserWriteDto userWriteDto, string password)

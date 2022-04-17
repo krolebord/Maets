@@ -5,7 +5,7 @@ using Maets.Data;
 using Maets.Domain.Constants;
 using Maets.Domain.Entities;
 using Maets.Extensions;
-using Maets.Models.Dtos.Company;
+using Maets.Models.Dtos.Companies;
 using Maets.Services.Files;
 using Microsoft.AspNetCore.Authorization;
 
