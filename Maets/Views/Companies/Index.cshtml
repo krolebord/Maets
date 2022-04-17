@@ -17,7 +17,7 @@
         CanCreate = true,
         CanDelete = true,
         CanEdit = true,
-        CanViewDetails = false,
+        CanViewDetails = true,
         ItemIdSelector = dto => dto.Id,
         Items = Model,
         Columns = new List<TableViewModel<CompanyReadDto>.Column>
@@ -31,6 +31,21 @@
             {
                 Header = "Description",
                 ValueSelector = dto => dto.Description
+            },
+            new()
+            {
+                Header = "# Published",
+                ValueSelector = dto => dto.PublishedAppsCount.ToString()
+            },
+            new()
+            {
+                Header = "# Developed",
+                ValueSelector = dto => dto.DevelopedAppsCount.ToString()
+            },
+            new()
+            {
+                Header = "# Employees",
+                ValueSelector = dto => dto.EmployeesCount.ToString()
             }
         }
     };

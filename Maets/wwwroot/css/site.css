@@ -54,3 +54,7 @@ img.avatar {
 }
 
 select.search-select {}
+
+.pointer {
+    cursor: pointer;
+}

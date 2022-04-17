@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -16,26 +17,24 @@ public class CompaniesController : MaetsController
 {
     private readonly MaetsDbContext _context;
     private readonly IFileReadService _fileReadService;
+    private readonly IFileWriteService _fileWriteService;
+    private readonly IMapper _mapper;
 
-    public CompaniesController(MaetsDbContext context, IFileReadService fileReadService)
+    public CompaniesController(MaetsDbContext context, IFileReadService fileReadService, IMapper mapper, IFileWriteService fileWriteService)
     {
         _context = context;
         _fileReadService = fileReadService;
+        _mapper = mapper;
+        _fileWriteService = fileWriteService;
     }
 
     // GET: Companies
     public async Task<IActionResult> Index()
     {
-        var companies = _context.Companies
-            .Include(c => c.Photo)
-            .ToList();
+        var companies = await GetCompanyReadDtoQuery()
+            .ToListAsync();
 
-        return View(companies.Select(x => new CompanyReadDto(
-            x.Id,
-            x.Name,
-            x.Description,
-            _fileReadService.ImageUrlOrDefault(x.Photo)
-        )));
+        return View(companies);
     }
 
     // GET: Companies/Details/5
@@ -60,26 +59,36 @@ public class CompaniesController : MaetsController
     // GET: Companies/Create
     public IActionResult Create()
     {
-        ViewData["PhotoId"] = new SelectList(_context.MediaFiles, "Id", "Id");
         return View();
     }
 
     // POST: Companies/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,Name,Description,PhotoId")] Company company)
+    public async Task<IActionResult> Create(CompanyWriteDto companyDto)
     {
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
+            return View(companyDto);
+
+        var company = new Company
         {
-            company.Id = Guid.NewGuid();
-            _context.Add(company);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            Id = Guid.NewGuid(),
+            Name = companyDto.Name,
+            Description = companyDto.Description
+        };
+
+        if (companyDto.Photo is not null)
+        {
+            var photoKey = $"company-photo-{Guid.NewGuid()}.png";
+            var photoFile = await _fileWriteService.UploadFileAsync(photoKey, companyDto.Photo.OpenReadStream());
+            company.Photo = photoFile;
         }
-        ViewData["PhotoId"] = new SelectList(_context.MediaFiles, "Id", "Id", company.PhotoId);
-        return View(company);
+
+        _context.Add(company);
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Index));
+
     }
 
     // GET: Companies/Edit/5
@@ -95,44 +104,48 @@ public class CompaniesController : MaetsController
         {
             return NotFound();
         }
-        ViewData["PhotoId"] = new SelectList(_context.MediaFiles, "Id", "Id", company.PhotoId);
-        return View(company);
+
+        return View(new CompanyWriteDto
+        {
+            Name = company.Name,
+            Description = company.Description
+        });
     }
 
     // POST: Companies/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,Description,PhotoId")] Company company)
+    public async Task<IActionResult> Edit(Guid id, CompanyWriteDto companyDto)
     {
-        if (id != company.Id)
+        if (!ModelState.IsValid)
+            return View(companyDto);
+
+        var company = await _context.Companies
+            .Include(x => x.Photo)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (company is null)
         {
             return NotFound();
         }
 
-        if (ModelState.IsValid)
+        company.Name = companyDto.Name;
+        company.Description = companyDto.Description;
+
+        if (companyDto.Photo is not null)
         {
-            try
+            if (company.Photo is not null)
             {
-                _context.Update(company);
-                await _context.SaveChangesAsync();
+                await _fileWriteService.DeleteFileAsync(company.Photo);
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CompanyExists(company.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction(nameof(Index));
+
+            var photoKey = $"company-photo-{Guid.NewGuid()}.png";
+            company.Photo = await _fileWriteService.UploadFileAsync(photoKey, companyDto.Photo.OpenReadStream());
         }
-        ViewData["PhotoId"] = new SelectList(_context.MediaFiles, "Id", "Id", company.PhotoId);
-        return View(company);
+
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Index));
     }
 
     // GET: Companies/Delete/5
@@ -143,15 +156,14 @@ public class CompaniesController : MaetsController
             return NotFound();
         }
 
-        var company = await _context.Companies
-            .Include(c => c.Photo)
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (company == null)
+        var companyDto = await GetCompanyReadDtoQuery(id)
+            .FirstOrDefaultAsync();
+        if (companyDto == null)
         {
             return NotFound();
         }
 
-        return View(company);
+        return View(companyDto);
     }
 
     // POST: Companies/Delete/5
@@ -160,13 +172,34 @@ public class CompaniesController : MaetsController
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
         var company = await _context.Companies.FindAsync(id);
-        _context.Companies.Remove(company);
-        await _context.SaveChangesAsync();
+        if (company is not null)
+        {
+            _context.Companies.Remove(company);
+            await _context.SaveChangesAsync();
+        }
         return RedirectToAction(nameof(Index));
     }
 
-    private bool CompanyExists(Guid id)
+    private IQueryable<CompanyReadDto> GetCompanyReadDtoQuery(Guid? id = null)
     {
-        return _context.Companies.Any(e => e.Id == id);
+        IQueryable<Company> query = _context.Companies
+            .Include(c => c.Photo);
+
+        if (id is not null)
+        {
+            query = query.Where(x => x.Id == id.Value);
+        }
+
+        return query.Select(x => new CompanyReadDto(
+            x.Id,
+            x.Name,
+            x.Description,
+            _fileReadService.ImageUrlOrDefault(x.Photo)
+        )
+        {
+            EmployeesCount = x.Employees.Count,
+            DevelopedAppsCount = x.DevelopedApps.Count,
+            PublishedAppsCount = x.PublishedApps.Count
+        });
     }
 }

@@ -81,6 +81,7 @@
   <ItemGroup>
     <Folder Include="Migrations" />
     <Folder Include="Resources" />
+    <Folder Include="Services\Companies" />
   </ItemGroup>
   
 </Project>

@@ -1,13 +1,19 @@
-@using Microsoft.AspNetCore.Html
+@using Maets.Helpers
+@using Maets.Extensions
 @model Maets.Models.ViewModels.TableViewModel
 
 @{
     var items = Model.GetItems().ToArray();
     var columns = Model.GetColumns().ToArray();
+    var tableClass = new CssClassBuilder("table")
+        .AddIf(Model.CanViewDetails, "table-hover")
+        .ToString();
+    var cellClass = new CssClassBuilder()
+        .AddIf(Model.CanViewDetails, "position-relative")
+        .ToString();
 }
-
 <div class="table-responsive">
-<table class="table">
+<table class="@tableClass">
     <thead>
     <tr>
         @foreach (var column in columns)
@@ -26,7 +32,13 @@
         <tr>
             @foreach (var column in columns)
             {
-                <td>@column.GetDisplay(item)</td>
+                <td class="@cellClass">
+                    @if (Model.CanViewDetails)
+                    {
+                        <a class="stretched-link" asp-action="Details" asp-route-id="@Model.GetItemId(item)"></a>
+                    }
+                    @column.GetDisplay(item)
+                </td>
             }
             @if (Model.HasActions)
             {

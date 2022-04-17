@@ -2,4 +2,6 @@ using Microsoft.AspNetCore.Html;
 
 namespace Maets.Extensions;
 
+public delegate IHtmlContent HtmlRenderer();
+
 public delegate IHtmlContent HtmlRenderer<in TItem>(TItem item);
