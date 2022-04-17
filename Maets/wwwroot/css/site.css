@@ -55,6 +55,8 @@ img.avatar {
 
 select.search-select {}
 
+textarea.html-editor {}
+
 .pointer {
     cursor: pointer;
 }

@@ -29,7 +29,7 @@ gulp.task('build-vendor-css', () => {
 
 gulp.task('build-vendor-js', () => {
     return gulp.src(vendorScripts)
-        .pipe(concat('vendor.min.js'))
+        .pipe(concat('vendor.min.js', {newLine: ';'}))
         .pipe(uglify())
         .pipe(gulp.dest('wwwroot/js'));
 });
