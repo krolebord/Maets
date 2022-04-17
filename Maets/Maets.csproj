@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-Maets-7D28CDD4-8DC6-4DE2-A6AA-3B947F2F100D</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,6 +20,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="6.0.4" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.2" />
   </ItemGroup>
 
@@ -79,9 +81,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations" />
     <Folder Include="Resources" />
     <Folder Include="Services\Companies" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="initialize_db.sql" />
+    <EmbeddedResource Include="initialize_db.sql" />
   </ItemGroup>
   
 </Project>

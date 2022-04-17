@@ -55,6 +55,11 @@ public class MaetsDbContext : DbContext
                 .HasForeignKey(d => d.PublisherId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("apps_publisherid_foreign");
+
+            entity.HasOne(d => d.MainImage)
+                .WithOne()
+                .HasForeignKey<App>(d => d.MainImageId)
+                .HasConstraintName("apps_mainimageid_foreign");
         });
 
         modelBuilder.Entity<AppScreenshot>(entity => {
@@ -62,6 +67,10 @@ public class MaetsDbContext : DbContext
 
             entity.Property(e => e.Id).ValueGeneratedOnAdd()
                 .HasValueGenerator<GuidValueGenerator>();
+
+            entity.Property(e => e.Order)
+                .HasDefaultValue(0)
+                .IsRequired();
 
             entity.HasOne(x => x.File)
                 .WithOne()

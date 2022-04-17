@@ -7,9 +7,12 @@ public sealed class App : Entity
     public DateTimeOffset? ReleaseDate { get; set; }
     public decimal Price { get; set; }
     public Guid PublisherId { get; set; }
+    public Guid? MainImageId { get; set; }
 
 
     public Company? Publisher { get; set; }
+
+    public MediaFile? MainImage { get; set; }
 
     public ICollection<AppScreenshot> Screenshots { get; set; } = new HashSet<AppScreenshot>();
 
