@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Maets.Data;
 using Maets.Domain.Constants;
 using Maets.Domain.Entities;
+using Maets.Extensions;
+using Maets.Models.Dtos.Company;
+using Maets.Services.Files;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Maets.Controllers;
@@ -12,17 +15,27 @@ namespace Maets.Controllers;
 public class CompaniesController : MaetsController
 {
     private readonly MaetsDbContext _context;
+    private readonly IFileReadService _fileReadService;
 
-    public CompaniesController(MaetsDbContext context)
+    public CompaniesController(MaetsDbContext context, IFileReadService fileReadService)
     {
         _context = context;
+        _fileReadService = fileReadService;
     }
 
     // GET: Companies
     public async Task<IActionResult> Index()
     {
-        var maetsDbContext = _context.Companies.Include(c => c.Photo);
-        return View(await maetsDbContext.ToListAsync());
+        var companies = _context.Companies
+            .Include(c => c.Photo)
+            .ToList();
+
+        return View(companies.Select(x => new CompanyReadDto(
+            x.Id,
+            x.Name,
+            x.Description,
+            _fileReadService.ImageUrlOrDefault(x.Photo)
+        )));
     }
 
     // GET: Companies/Details/5

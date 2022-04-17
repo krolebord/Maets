@@ -67,7 +67,7 @@ internal class UsersService : IUsersService
                 user.Id,
                 user.UserName,
                 applicationUser.Email,
-                GetAvatarUrl(user.Avatar),
+                _fileReadService.AvatarUrlOrDefault(user.Avatar),
                 applicationUser.Roles.Select(x => x.Name).ToArray()
             )
         );
@@ -89,7 +89,7 @@ internal class UsersService : IUsersService
         return new UserReadDto(
             user.Id,
             user.UserName,
-            GetAvatarUrl(user.Avatar)
+            _fileReadService.AvatarUrlOrDefault(user.Avatar)
         );
     }
 
@@ -180,16 +180,7 @@ internal class UsersService : IUsersService
             .Select(x => x.Avatar!.Key)
             .FirstOrDefaultAsync();
 
-        return avatarKey is null
-            ? "/assets/blank-avatar.jpg"
-            : _fileReadService.GetPublicUrl(avatarKey);
-    }
-
-    private string GetAvatarUrl(MediaFile? avatarFile)
-    {
-        return avatarFile?.Key is null
-            ? "/assets/blank-avatar.jpg"
-            : _fileReadService.GetPublicUrl(avatarFile.Key);
+        return _fileReadService.AvatarUrlOrDefault(avatarKey);
     }
 
     public async Task SendEmailConfirmation(Guid userId)

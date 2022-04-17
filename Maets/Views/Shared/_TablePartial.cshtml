@@ -31,14 +31,18 @@
             @if (Model.HasActions)
             {
                 <td>
-                    <div class="d-flex flex-nowrap flex-row">
+                    <div class="d-flex flex-nowrap flex-row" style="gap: 6px">
                         @if (Model.CanEdit)
                         {
-                            <a class="btn btn-sm btn-primary mx-1 flex-grow-1" asp-action="Edit" asp-route-id="@Model.GetItemId(item)">Edit</a>
+                            <a class="btn btn-sm btn-primary flex-grow-1" asp-action="Edit" asp-route-id="@Model.GetItemId(item)">
+                                <i class="fas fa-pen-to-square"></i> Edit
+                            </a>
                         }
                         @if (Model.CanDelete)
                         {
-                            <a class="btn btn-sm btn-danger mx-1 flex-grow-1" asp-action="Delete" asp-route-id="@Model.GetItemId(item)">Delete</a>
+                            <a class="btn btn-sm btn-danger flex-grow-1" asp-action="Delete" asp-route-id="@Model.GetItemId(item)">
+                                <i class="fas fa-trash-can"></i> Delete
+                            </a>
                         }
                     </div>
                 </td>
@@ -48,12 +52,14 @@
     @if (Model.CanCreate)
     {
         <tr>
-            <td/>
-            <td/>
-            <td/>
-            <td/>
+            @foreach (var _ in columns)
+            {
+                <td/>
+            }
             <td>
-                <a class="btn btn-sm btn-success w-100 mx-1" asp-action="Create">Create New</a>
+                <a class="btn btn-sm btn-success w-100" asp-action="Create">
+                    <i class="fas fa-plus"></i> Create New
+                </a>
             </td>
         </tr>
     }
