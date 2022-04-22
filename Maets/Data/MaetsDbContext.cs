@@ -56,6 +56,28 @@ public class MaetsDbContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("apps_publisherid_foreign");
 
+            entity.HasMany(a => a.Developers)
+                .WithMany(c => c.DevelopedApps)
+                .UsingEntity<AppsDeveloper>(
+                configureRight => configureRight
+                    .HasOne(d => d.Company)
+                    .WithMany()
+                    .HasForeignKey(d => d.CompanyId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("apps_developers_companyid_foreign"),
+                configureLeft => configureLeft
+                    .HasOne(d => d.App)
+                    .WithMany()
+                    .HasForeignKey(d => d.AppId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("apps_developers_appid_foreign"),
+                builder => builder
+                    .ToTable("Apps_Developers")
+                    .Property(x => x.Id)
+                    .ValueGeneratedOnAdd()
+                    .HasValueGenerator<GuidValueGenerator>()
+                );
+            
             entity.HasOne(d => d.MainImage)
                 .WithOne()
                 .HasForeignKey<App>(d => d.MainImageId)
@@ -99,24 +121,24 @@ public class MaetsDbContext : DbContext
                 .HasForeignKey(d => d.PhotoId)
                 .HasConstraintName("companies_photoid_foreign");
 
-            entity.HasMany(c => c.DevelopedApps)
-                .WithMany(a => a.Developers)
-                .UsingEntity<AppsDeveloper>(
+            entity.HasMany(x => x.Employees)
+                .WithMany(x => x.Companies)
+                .UsingEntity<CompanyEmployee>(
                     configureRight => configureRight
-                        .HasOne(d => d.App)
+                        .HasOne(x => x.User)
                         .WithMany()
-                        .HasForeignKey(d => d.AppId)
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("apps_developers_appid_foreign"),
+                        .HasForeignKey(u => u.UserId)
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("employees_userid_foreign"),
                     configureLeft => configureLeft
-                        .HasOne(d => d.Company)
+                        .HasOne(x => x.Company)
                         .WithMany()
-                        .HasForeignKey(d => d.CompanyId)
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("apps_developers_companyid_foreign"),
+                        .HasForeignKey(x => x.CompanyId)
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("employees_companyid_foreign"),
                     builder => builder
-                        .ToTable("Apps_Developers")
-                        .Property(x => x.Id)
+                        .ToTable("CompanyEmployees")
+                        .Property(e => e.Id)
                         .ValueGeneratedOnAdd()
                         .HasValueGenerator<GuidValueGenerator>()
                 );
@@ -207,25 +229,6 @@ public class MaetsDbContext : DbContext
                 .HasForeignKey(d => d.AvatarId)
                 .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("users_avatarid_foreign");
-        });
-
-        modelBuilder.Entity<CompanyEmployee>(entity =>
-        {
-            entity.ToTable("CompanyEmployees");
-
-            entity.Property(e => e.Id).ValueGeneratedNever();
-
-            entity.HasOne(x => x.User)
-                .WithOne()
-                .HasForeignKey<CompanyEmployee>(u => u.UserId)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("employees_userid_foreign");
-
-            entity.HasOne(x => x.Company)
-                .WithMany(x => x.Employees)
-                .HasForeignKey(x => x.CompanyId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("employees_companyid_foreign");
         });
     }
 }

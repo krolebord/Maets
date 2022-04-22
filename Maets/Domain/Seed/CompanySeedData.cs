@@ -27,12 +27,7 @@ public class CompanySeedData : SeedData<Company>
         var dev = await context.Set<User>()
             .FirstAsync(x => x.Id == DefaultUserData.Dev.Id);
 
-        company.Employees.Add(new()
-        {
-            Id = Guid.NewGuid(),
-            Company = company,
-            User = dev
-        });
+        company.Employees.Add(dev);
 
         return new [] { company };
     }

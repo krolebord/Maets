@@ -57,8 +57,9 @@ public class CompaniesController : MaetsController
     }
 
     // GET: Companies/Create
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
+        await LoadViewData();
         return View();
     }
 
@@ -68,7 +69,10 @@ public class CompaniesController : MaetsController
     public async Task<IActionResult> Create(CompanyWriteDto companyDto)
     {
         if (!ModelState.IsValid)
+        {
+            await LoadViewData();
             return View(companyDto);
+        }
 
         var company = new Company
         {
@@ -84,11 +88,14 @@ public class CompaniesController : MaetsController
             company.Photo = photoFile;
         }
 
+        company.Employees = await _context.Users
+            .Where(x => companyDto.EmployeeIds.Contains(x.Id))
+            .ToListAsync();
+
         _context.Add(company);
         await _context.SaveChangesAsync();
 
         return RedirectToAction(nameof(Index));
-
     }
 
     // GET: Companies/Edit/5
@@ -99,16 +106,20 @@ public class CompaniesController : MaetsController
             return NotFound();
         }
 
-        var company = await _context.Companies.FindAsync(id);
+        var company = await _context.Companies
+            .Include(x => x.Employees)
+            .FirstOrDefaultAsync(x => x.Id == id);
         if (company == null)
         {
             return NotFound();
         }
 
+        await LoadViewData();
         return View(new CompanyWriteDto
         {
             Name = company.Name,
-            Description = company.Description
+            Description = company.Description,
+            EmployeeIds = company.Employees.Select(x => x.Id)
         });
     }
 
@@ -118,10 +129,14 @@ public class CompaniesController : MaetsController
     public async Task<IActionResult> Edit(Guid id, CompanyWriteDto companyDto)
     {
         if (!ModelState.IsValid)
+        {
+            await LoadViewData();
             return View(companyDto);
+        }
 
         var company = await _context.Companies
             .Include(x => x.Photo)
+            .Include(x => x.Employees)
             .FirstOrDefaultAsync(x => x.Id == id);
 
         if (company is null)
@@ -142,6 +157,10 @@ public class CompaniesController : MaetsController
             var photoKey = BuildCompanyPhotoKey(company);
             company.Photo = await _fileWriteService.UploadFileAsync(photoKey, companyDto.Photo.OpenReadStream());
         }
+        
+        company.Employees = await _context.Users
+            .Where(x => companyDto.EmployeeIds.Contains(x.Id))
+            .ToListAsync();
 
         await _context.SaveChangesAsync();
 
@@ -203,6 +222,20 @@ public class CompaniesController : MaetsController
         });
     }
 
+    private async Task LoadViewData()
+    {
+        var users = await _context.Users
+            .Select(x => new
+            {
+                Id = x.Id,
+                UserName = x.UserName
+            })
+            .OrderBy(x => x.UserName)
+            .ToListAsync();
+
+        ViewData["Users"] = new SelectList(users, "Id", "UserName");
+    }
+    
     private string BuildCompanyPhotoKey(Company company)
     {
         return $"company-photos/{company.Id}-{Guid.NewGuid()}.png";

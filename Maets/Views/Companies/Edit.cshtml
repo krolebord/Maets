@@ -25,6 +25,11 @@
                 <input asp-for="@Model.Photo" type="file" accept="image/*" class="form-control" />
                 <span asp-validation-for="Photo" class="text-danger"></span>
             </div>
+            <div class="form-group">
+                <label class="control-label">Employees</label>
+                <select asp-for="EmployeeIds" multiple class="form-control search-select" asp-items="ViewBag.Users"></select>
+                <span asp-validation-for="EmployeeIds" class="text-danger"></span>
+            </div>
             <div class="my-2">
                 <partial name="_BackToIndexPartial"/>
                 <div class="form-group d-inline-block">

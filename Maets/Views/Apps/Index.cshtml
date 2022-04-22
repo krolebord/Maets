@@ -42,8 +42,8 @@
             },
             new()
             {
-                Header = "Publisher",
-                ValueSelector = dto => dto.PublisherName,
+                Header = "Release",
+                ValueSelector = dto => dto.ReleaseDate?.ToString("d") ?? string.Empty,
             },
             new()
             {

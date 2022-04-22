@@ -16,7 +16,7 @@
             </div>
             <div class="form-group">
                 <label class="control-label">Publisher</label>
-                <select asp-for="PublisherId" class="form-control search-select w-100" asp-items="ViewBag.Companies"></select>
+                <select asp-for="PublisherId" class="form-control search-select" asp-items="ViewBag.Companies"></select>
                 <span asp-validation-for="PublisherId" class="text-danger"></span>
             </div>
         </div>
@@ -36,13 +36,13 @@
 
         <div class="w-100 form-group">
             <label class="control-label">Developers</label>
-            <select asp-for="DeveloperIds" multiple class="form-control search-select w-100" asp-items="ViewBag.Companies"></select>
+            <select asp-for="DeveloperIds" multiple class="form-control search-select" asp-items="ViewBag.Companies"></select>
             <span asp-validation-for="DeveloperIds" class="text-danger"></span>
         </div>
 
         <div class="w-100 form-group">
             <label class="control-label">Labels</label>
-            <select asp-for="Labels" multiple class="form-control labels-select w-100" asp-items="ViewBag.Labels"></select>
+            <select asp-for="Labels" multiple class="form-control labels-select" asp-items="ViewBag.Labels"></select>
             <span asp-validation-for="Labels" class="text-danger"></span>
         </div>
 

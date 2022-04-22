@@ -12,5 +12,5 @@ public sealed class Company : Entity
 
     public ICollection<App> DevelopedApps { get; set; } = new HashSet<App>();
 
-    public ICollection<CompanyEmployee> Employees { get; set; } = new HashSet<CompanyEmployee>();
+    public ICollection<User> Employees { get; set; } = new HashSet<User>();
 }

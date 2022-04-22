@@ -8,4 +8,6 @@ public class User : Entity
     public Guid? AvatarId { get; set; }
 
     public MediaFile? Avatar { get; set; }
+    
+    public ICollection<Company> Companies { get; set; } = new HashSet<Company>();
 }

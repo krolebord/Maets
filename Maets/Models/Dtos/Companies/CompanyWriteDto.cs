@@ -10,4 +10,6 @@ public class CompanyWriteDto
     public string? Description { get; set; } = string.Empty;
 
     public IFormFile? Photo { get; set; }
+
+    public IEnumerable<Guid> EmployeeIds { get; set; } = new HashSet<Guid>();
 }
