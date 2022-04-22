@@ -5,44 +5,29 @@
 <ul class="navbar-nav me-auto mb-2 mb-lg-0 flex-grow-1 justify-content-center">
     <li class="nav-item dropdown">
         <a class="nav-link"
-           asp-area="" asp-controller="Store" asp-action="Index">
+           asp-area="" asp-page="/store/home">
             <i class="fas fa-shopping-cart"></i> Store
         </a>
         <ul class="dropdown-menu">
-            <li><a class="dropdown-item" asp-controller="Store" asp-action="Index">Home</a></li>
-            <li><a class="dropdown-item" asp-controller="Store" asp-action="Search">Search</a></li>
+            <li><a class="dropdown-item" asp-page="/store/home">Home</a></li>
+            <li><a class="dropdown-item" asp-page="/store/search">Search</a></li>
         </ul>
     </li>
     @if (SignInManager.IsSignedIn(User))
     {
         <li class="nav-item dropdown">
-            <a class="nav-link"
-               asp-area="" asp-controller="Store" asp-action="Index">
+            <a class="nav-link" asp-area="" asp-page="/store/home">
                 <i class="fas fa-user-group"></i> Community
             </a>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" asp-controller="Store" asp-action="Index">Your Reviews</a></li>
-            </ul>
-        </li>
-    }
-    @if (SignInManager.IsDev(User))
-    {
-        <li class="nav-item dropdown">
-            <a class="nav-link"
-               asp-area="" asp-controller="Store" asp-action="Index">
-                <i class="fas fa-compass-drafting"></i> Studio
-            </a>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" asp-controller="Store" asp-action="Index">Published apps</a></li>
-                <li><a class="dropdown-item" asp-controller="Store" asp-action="Search">Developed apps</a></li>
+                <li><a class="dropdown-item" asp-page="/store/home">Your Reviews</a></li>
             </ul>
         </li>
     }
     @if (SignInManager.IsAdmin(User))
     {
         <li class="nav-item dropdown">
-            <a class="nav-link"
-               asp-area="" asp-controller="Store" asp-action="Index">
+            <a class="nav-link" asp-area="" asp-controller="Apps" asp-action="Index">
                 <i class="fas fa-screwdriver-wrench"></i> Administration
             </a>
             <ul class="dropdown-menu">

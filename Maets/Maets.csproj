@@ -83,7 +83,6 @@
 
   <ItemGroup>
     <Folder Include="Resources" />
-    <Folder Include="Services\Companies" />
   </ItemGroup>
 
   <ItemGroup>

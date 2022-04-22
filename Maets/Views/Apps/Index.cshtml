@@ -1,4 +1,3 @@
-@using Maets.Models.Dtos.Companies
 @using Maets.Models.ViewModels
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using Maets.Extensions
@@ -9,7 +8,7 @@
     ViewData["Title"] = "Apps";
 
     HtmlRenderer<AppTableDto> titleRenderer =
-        @<a asp-page="/app" asp-route-id="@item.Id">
+        @<a asp-page="/store/app" asp-route-id="@item.Id">
             @item.Title
         </a>;
 

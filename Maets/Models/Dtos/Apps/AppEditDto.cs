@@ -5,7 +5,7 @@ namespace Maets.Models.Dtos.Apps;
 public class AppEditDto
 {
     [Required]
-    [MinLength(6)]
+    [MinLength(4)]
     public string Title { get; set; } = string.Empty;
 
     [Required]

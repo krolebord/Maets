@@ -123,6 +123,7 @@ namespace Maets.Areas.Identity.Pages.Account.Manage
             if (AvatarInput.Avatar is null)
             {
                 StatusMessage = "Error Avatar file is not specified";
+                await LoadAsync(user);
                 return Page();
             }
 

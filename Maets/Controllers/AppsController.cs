@@ -186,7 +186,10 @@ public class AppsController : MaetsController
 
         if (appDto.MainImage is not null)
         {
-            await _fileWriteService.DeleteFileAsync(app.MainImage!);
+            if (app.MainImage is not null)
+            {
+                await _fileWriteService.DeleteFileAsync(app.MainImage);
+            }
             var mainImageKey = BuildAppScreenshotId(app.Id);
             app.MainImage = await _fileWriteService.UploadFileAsync(mainImageKey, appDto.MainImage.OpenReadStream());
         }
