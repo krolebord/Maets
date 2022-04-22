@@ -10,5 +10,7 @@ public class CompaniesProfile : Profile
     {
         CreateMap<Company, CompanyReadDto>()
             .MapImageUrl(dto => dto.PhotoUrl, company => company.Photo);
+
+        CreateMap<Company, CompanyShortDto>();
     }
 }

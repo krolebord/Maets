@@ -55,7 +55,7 @@
   --bs-black-rgb: 0, 0, 0;
   --bs-body-color-rgb: 235, 235, 235;
   --bs-body-bg-rgb: 15, 37, 55;
-  --bs-font-sans-serif: Lato, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --bs-font-sans-serif: Roboto, Lato, -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
   --bs-body-font-family: var(--bs-font-sans-serif);
@@ -2143,8 +2143,8 @@ progress {
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
-  color: #212529;
-  background-color: #fff;
+  color: var(--bs-white);
+  background-color: var(--bs-dark);
   background-clip: padding-box;
   border: 0 solid transparent;
   -webkit-appearance: none;
@@ -2169,8 +2169,6 @@ progress {
 }
 
 .form-control:focus {
-  color: #212529;
-  background-color: #fff;
   border-color: #a6cdf4;
   outline: 0;
   box-shadow: 0 0 0 0.25rem rgba(76, 155, 232, 0.25);

@@ -5,15 +5,9 @@
 @{
     var items = Model.GetItems().ToArray();
     var columns = Model.GetColumns().ToArray();
-    var tableClass = new CssClassBuilder("table")
-        .AddIf(Model.CanViewDetails, "table-hover")
-        .ToString();
-    var cellClass = new CssClassBuilder()
-        .AddIf(Model.CanViewDetails, "position-relative")
-        .ToString();
 }
 <div class="table-responsive">
-<table class="@tableClass">
+<table class="table table-net">
     <thead>
     <tr>
         @foreach (var column in columns)
@@ -32,11 +26,7 @@
         <tr>
             @foreach (var column in columns)
             {
-                <td class="@cellClass">
-                    @if (Model.CanViewDetails)
-                    {
-                        <a class="stretched-link" asp-action="Details" asp-route-id="@Model.GetItemId(item)"></a>
-                    }
+                <td>
                     @column.GetDisplay(item)
                 </td>
             }
@@ -44,6 +34,12 @@
             {
                 <td>
                     <div class="d-flex flex-nowrap flex-row" style="gap: 6px">
+                        @if (Model.CanViewDetails)
+                        {
+                            <a class="btn btn-sm btn-info flex-grow-1" asp-action="Details" asp-route-id="@Model.GetItemId(item)">
+                                <i class="fas fa-asterisk"></i> Details
+                            </a>
+                        }
                         @if (Model.CanEdit)
                         {
                             <a class="btn btn-sm btn-primary flex-grow-1" asp-action="Edit" asp-route-id="@Model.GetItemId(item)">

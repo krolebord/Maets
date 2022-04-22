@@ -8,7 +8,8 @@ const vendorStyles = [
     "node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker.css",
     "node_modules/select2/dist/css/select2.css",
     "wwwroot/css/bootstrap.css",
-    "wwwroot/css/select2-bootstrap-5-theme.css"
+    "wwwroot/css/select2-bootstrap-5-theme.css",
+    "wwwroot/css/dataTables.bootstrap5.min.css"
 ];
 const vendorScripts = [
     "node_modules/jquery/dist/jquery.js",
@@ -17,7 +18,8 @@ const vendorScripts = [
     "node_modules/popper.js/dist/umd/index.js",
     "node_modules/bootstrap/dist/js/bootstrap.js",
     "node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.js",
-    "node_modules/select2/dist/js/select2.full.js"
+    "node_modules/select2/dist/js/select2.full.js",
+    "node_modules/datatables.net/js/jquery.dataTables.min.js"
 ];
 
 gulp.task('build-vendor-css', () => {

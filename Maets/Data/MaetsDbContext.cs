@@ -60,29 +60,28 @@ public class MaetsDbContext : DbContext
                 .WithOne()
                 .HasForeignKey<App>(d => d.MainImageId)
                 .HasConstraintName("apps_mainimageid_foreign");
-        });
 
-        modelBuilder.Entity<AppScreenshot>(entity => {
-            entity.ToTable("App_Screenshots");
-
-            entity.Property(e => e.Id).ValueGeneratedOnAdd()
-                .HasValueGenerator<GuidValueGenerator>();
-
-            entity.Property(e => e.Order)
-                .HasDefaultValue(0)
-                .IsRequired();
-
-            entity.HasOne(x => x.File)
-                .WithOne()
-                .HasForeignKey<AppScreenshot>(x => x.FileId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("app_screenshots_fileid_foreign");
-
-            entity.HasOne(x => x.App)
-                .WithMany(x => x.Screenshots)
-                .HasForeignKey(x => x.AppId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("app_screenshots_appid_foreign");
+            entity.HasMany(d => d.Screenshots)
+                .WithMany("Apps")
+                .UsingEntity<AppScreenshot>(
+                    configureLeft => configureLeft
+                        .HasOne(x => x.File)
+                        .WithMany()
+                        .HasForeignKey(x => x.FileId)
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("app_screenshots_fileid_foreign"),
+                    configureRight => configureRight
+                        .HasOne(x => x.App)
+                        .WithMany()
+                        .HasForeignKey(x => x.AppId)
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("app_screenshots_appid_foreign"),
+                    builder => builder
+                        .ToTable("App_Screenshots")
+                        .Property(x => x.Id)
+                        .ValueGeneratedOnAdd()
+                        .HasValueGenerator<GuidValueGenerator>()
+                );
         });
 
         modelBuilder.Entity<Company>(entity =>

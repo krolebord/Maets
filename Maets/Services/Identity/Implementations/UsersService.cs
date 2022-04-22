@@ -154,7 +154,7 @@ internal class UsersService : IUsersService
             await _fileWriteService.DeleteFileAsync(user.Avatar);
         }
 
-        var avatarKey = $"{user.UserName}-avatar-{Guid.NewGuid()}.png";
+        var avatarKey = $"avatars/{user.UserName}-{Guid.NewGuid()}.png";
         user.Avatar = await _fileWriteService.UploadFileAsync(avatarKey, avatarFile.OpenReadStream());
 
         await _maetsDbContext.SaveChangesAsync();

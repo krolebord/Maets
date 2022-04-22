@@ -4,5 +4,26 @@
 $('input[data-provide="datepicker"]').datepicker();
 
 $('select.search-select').select2({
-    theme: "bootstrap-5"
+    theme: "bootstrap-5",
+    width: '100%'
 });
+
+$('select[multiple=true].search-select').select2({
+    theme: "bootstrap-5",
+    width: '100%',
+    closeOnSelect: false
+});
+
+$('select.labels-select').select2({
+    theme: "bootstrap-5",
+    width: '100%',
+    tags: true,
+    closeOnSelect: false,
+    tokenSeparators: [',']
+});
+
+$('table.table-net').DataTable( {
+    paging: false,
+    ordering: false,
+    info: false
+} );

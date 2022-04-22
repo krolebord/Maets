@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+﻿using Maets.Helpers;
 using Microsoft.EntityFrameworkCore.Migrations;
 #nullable disable
 
@@ -8,14 +8,7 @@ public partial class InitialDataMigration : Migration
 {
     protected override void Up(MigrationBuilder migrationBuilder)
     {
-        var assembly = Assembly.GetExecutingAssembly();
-        var resourcePath = assembly.GetManifestResourceNames()
-            .Single(str => str.EndsWith("initialize_db.sql"));
-
-        using Stream stream = assembly.GetManifestResourceStream(resourcePath);
-        using var reader = new StreamReader(stream ?? throw new InvalidOperationException());
-        var sql = reader.ReadToEnd();
-
+        var sql = EmbeddedResourceHelper.ReadEmbeddedResourceAsString("initialize_db.sql");
         migrationBuilder.Sql(sql);
     }
 

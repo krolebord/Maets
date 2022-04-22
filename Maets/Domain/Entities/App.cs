@@ -14,7 +14,7 @@ public sealed class App : Entity
 
     public MediaFile? MainImage { get; set; }
 
-    public ICollection<AppScreenshot> Screenshots { get; set; } = new HashSet<AppScreenshot>();
+    public ICollection<MediaFile> Screenshots { get; set; } = new HashSet<MediaFile>();
 
     public ICollection<Company> Developers { get; set; } = new HashSet<Company>();
 

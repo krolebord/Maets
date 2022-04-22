@@ -9,7 +9,7 @@ public class StoreController : MaetsController
     {
         return View();
     }
-
+    
     public IActionResult Search()
     {
         return View();

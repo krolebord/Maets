@@ -1,59 +1,70 @@
-@model IEnumerable<Maets.Domain.Entities.App>
+@using Maets.Models.Dtos.Companies
+@using Maets.Models.ViewModels
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Maets.Extensions
+@using Maets.Models.Dtos.Apps
+@model IEnumerable<Maets.Models.Dtos.Apps.AppTableDto>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Apps";
+
+    HtmlRenderer<AppTableDto> titleRenderer =
+        @<a asp-page="/app" asp-route-id="@item.Id">
+            @item.Title
+        </a>;
+
+    HtmlRenderer<AppTableDto> labelsRenderer =
+        @<span>
+            @foreach (var label in item.Labels)
+            {
+                <partial name="Components/_LabelPartial" model="label"/>
+            }
+        </span>;
+    
+    var tableModel = new TableViewModel<AppTableDto>
+    {
+        CanCreate = true,
+        CanDelete = true,
+        CanEdit = true,
+        CanViewDetails = true,
+        ItemIdSelector = dto => dto.Id,
+        Items = Model,
+        Columns = new List<TableViewModel<AppTableDto>.Column>
+        {
+            new()
+            {
+                Header = "Title",
+                ContentSelector = titleRenderer
+            },
+            new()
+            {
+                Header = "Price",
+                ValueSelector = dto => dto.Price > 0 ? dto.Price.ToString("c") : "Free",
+            },
+            new()
+            {
+                Header = "Publisher",
+                ValueSelector = dto => dto.PublisherName,
+            },
+            new()
+            {
+                Header = "Publisher",
+                ValueSelector = dto => dto.PublisherName,
+            },
+            new()
+            {
+                Header = "Developers",
+                ValueSelector = dto => string.Join(", ", dto.DeveloperNames)
+            },
+            new()
+            {
+                Header = "Labels",
+                ContentSelector = labelsRenderer
+            }
+        }
+    };
 }
 
-<h1>Index</h1>
+<h1>Apps</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ReleaseDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Price)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Publisher)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ReleaseDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Price)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PublisherId)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<partial name="_TablePartial" model="tableModel"/>

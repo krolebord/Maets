@@ -74,12 +74,12 @@ public class CompaniesController : MaetsController
         {
             Id = Guid.NewGuid(),
             Name = companyDto.Name,
-            Description = companyDto.Description
+            Description = companyDto.Description ?? string.Empty
         };
 
         if (companyDto.Photo is not null)
         {
-            var photoKey = $"company-photo-{Guid.NewGuid()}.png";
+            var photoKey = BuildCompanyPhotoKey(company);
             var photoFile = await _fileWriteService.UploadFileAsync(photoKey, companyDto.Photo.OpenReadStream());
             company.Photo = photoFile;
         }
@@ -130,7 +130,7 @@ public class CompaniesController : MaetsController
         }
 
         company.Name = companyDto.Name;
-        company.Description = companyDto.Description;
+        company.Description = companyDto.Description ?? string.Empty;
 
         if (companyDto.Photo is not null)
         {
@@ -139,7 +139,7 @@ public class CompaniesController : MaetsController
                 await _fileWriteService.DeleteFileAsync(company.Photo);
             }
 
-            var photoKey = $"company-photo-{Guid.NewGuid()}.png";
+            var photoKey = BuildCompanyPhotoKey(company);
             company.Photo = await _fileWriteService.UploadFileAsync(photoKey, companyDto.Photo.OpenReadStream());
         }
 
@@ -201,5 +201,10 @@ public class CompaniesController : MaetsController
             DevelopedAppsCount = x.DevelopedApps.Count,
             PublishedAppsCount = x.PublishedApps.Count
         });
+    }
+
+    private string BuildCompanyPhotoKey(Company company)
+    {
+        return $"company-photos/{company.Id}-{Guid.NewGuid()}.png";
     }
 }

@@ -1,3 +1,4 @@
+using AutoMapper.EquivalencyExpression;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Maets.Data;
@@ -50,7 +51,10 @@ builder.Services.AddHttpContextAccessor();
 
 var assembly = typeof(Program).Assembly;
 
-builder.Services.AddAutoMapper(assembly);
+builder.Services.AddAutoMapper(
+    config => config.AddCollectionMappers(),
+    assembly
+);
 builder.Services.AddDependencies(assembly);
 builder.Services.AddSeedData(assembly);
 
