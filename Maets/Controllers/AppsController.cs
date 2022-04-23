@@ -3,13 +3,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Maets.Data;
+using Maets.Domain.Constants;
 using Maets.Domain.Entities;
 using Maets.Models.Dtos.Apps;
 using Maets.Services.Files;
 using Maets.Services.Labels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Maets.Controllers;
 
+[Authorize(Roles = RoleNames.AdminOrModerator)]
 public class AppsController : MaetsController
 {
     private readonly MaetsDbContext _context;

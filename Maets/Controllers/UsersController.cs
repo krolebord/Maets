@@ -76,6 +76,15 @@ namespace Maets.Controllers
 
             await _usersService.UpdateUserName(id, user.UserName);
 
+            if (user.IsManager)
+            {
+                await _usersService.EnsureManager(id);
+            }
+            else
+            {
+                await _usersService.EnsureNotManager(id);
+            }
+
             return RedirectToAction(nameof(Index));
         }
 

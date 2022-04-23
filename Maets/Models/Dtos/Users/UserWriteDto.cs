@@ -10,7 +10,7 @@ public class UserWriteDto
     [EmailAddress]
     public string? Email { get; set; }
 
-    public Guid? AvatarId { get; set; }
+    public bool IsManager { get; set; } = false;
 
     public UserWriteDto()
     {

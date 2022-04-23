@@ -17,8 +17,16 @@ public class RolesSeedData : SeedData<ApplicationRole>
     {
         return Task.FromResult(new ApplicationRole[]
         {
-            new(RoleNames.Admin),
-            new(RoleNames.Developer)
+            new(RoleNames.Admin)
+            {
+                Id = Guid.NewGuid().ToString(),
+                NormalizedName = RoleNames.Admin.ToUpper()
+            },
+            new(RoleNames.Moderator)
+            {
+                Id = Guid.NewGuid().ToString(),
+                NormalizedName = RoleNames.Moderator.ToUpper()
+            }
         }.AsEnumerable());
     }
 }

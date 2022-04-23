@@ -20,4 +20,7 @@ public interface IUsersService
 
     Task SendEmailChangeConfirmation(Guid userId, string newEmail);
     Task<IdentityResult> ConfirmEmailChange(string userId, string email, string code);
+
+    Task EnsureManager(Guid id);
+    Task EnsureNotManager(Guid id);
 }

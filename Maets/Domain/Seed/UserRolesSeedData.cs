@@ -19,16 +19,16 @@ public class UserRolesSeedData : SeedData<IdentityUserRole<string>>
     {
         var usersSet = context.Set<ApplicationUser>();
         var adminId = await usersSet.Select(x => x.Id).FirstAsync(x => x == DefaultUserData.Admin.Id.ToString());
-        var devId = await usersSet.Select(x => x.Id).FirstAsync(x => x == DefaultUserData.Dev.Id.ToString());
+        var moderatorId = await usersSet.Select(x => x.Id).FirstAsync(x => x == DefaultUserData.Moderator.Id.ToString());
 
         var rolesSet = context.Set<ApplicationRole>();
         var adminRoleId = (await rolesSet.FirstAsync(x => x.Name == RoleNames.Admin)).Id;
-        var devRoleId = (await rolesSet.FirstAsync(x => x.Name == RoleNames.Developer)).Id;
+        var moderatorRoleId = (await rolesSet.FirstAsync(x => x.Name == RoleNames.Moderator)).Id;
 
         return new IdentityUserRole<string>[]
         {
             new() { RoleId = adminRoleId, UserId = adminId },
-            new() { RoleId = devRoleId, UserId = devId }
+            new() { RoleId = moderatorRoleId, UserId = moderatorId },
         };
     }
 }

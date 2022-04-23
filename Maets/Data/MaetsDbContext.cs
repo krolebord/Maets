@@ -6,15 +6,6 @@ namespace Maets.Data;
 
 public class MaetsDbContext : DbContext
 {
-    public MaetsDbContext()
-    {
-    }
-
-    public MaetsDbContext(DbContextOptions<MaetsDbContext> options)
-        : base(options)
-    {
-    }
-
     public DbSet<User> Users { get; set; } = null!;
 
     public DbSet<App> Apps { get; set; } = null!;
@@ -32,6 +23,13 @@ public class MaetsDbContext : DbContext
     public DbSet<MediaFile> MediaFiles { get; set; } = null!;
 
     public DbSet<Review> Reviews { get; set; } = null!;
+
+    public DbSet<CompanyEmployee> CompanyEmployees { get; set; } = null!;
+
+    public MaetsDbContext() {}
+
+    public MaetsDbContext(DbContextOptions<MaetsDbContext> options)
+        : base(options) {}
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

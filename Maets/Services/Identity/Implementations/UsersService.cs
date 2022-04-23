@@ -3,6 +3,7 @@ using System.Text.Encodings.Web;
 using AutoMapper;
 using Maets.Attributes;
 using Maets.Data;
+using Maets.Domain.Constants;
 using Maets.Domain.Entities;
 using Maets.Domain.Entities.Identity;
 using Maets.Extensions;
@@ -110,16 +111,16 @@ internal class UsersService : IUsersService
             return result;
         }
 
+        if (userWriteDto.IsManager)
+        {
+            await _userManager.AddToRoleAsync(identityUser, RoleNames.Moderator);
+        }
+
         var user = new User
         {
             Id = userId,
             UserName = userWriteDto.UserName
         };
-
-        if (userWriteDto.AvatarId is not null && await _maetsDbContext.MediaFiles.AnyAsync(x => x.Id == userWriteDto.AvatarId))
-        {
-            userWriteDto.AvatarId = userWriteDto.AvatarId;
-        }
 
         _maetsDbContext.Users.Add(user);
         await _maetsDbContext.SaveChangesAsync();
@@ -268,5 +269,23 @@ internal class UsersService : IUsersService
 
         code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
         return await _userManager.ChangeEmailAsync(user, email, code);
+    }
+
+    public async Task EnsureManager(Guid id)
+    {
+        var user = await _userManager.FindByIdAsync(id.ToString());
+        if (!await _userManager.IsInRoleAsync(user, RoleNames.Moderator))
+        {
+            await _userManager.AddToRoleAsync(user, RoleNames.Moderator);
+        }
+    }
+
+    public async Task EnsureNotManager(Guid id)
+    {
+        var user = await _userManager.FindByIdAsync(id.ToString());
+        if (await _userManager.IsInRoleAsync(user, RoleNames.Moderator))
+        {
+            await _userManager.RemoveFromRoleAsync(user, RoleNames.Moderator);
+        }
     }
 }

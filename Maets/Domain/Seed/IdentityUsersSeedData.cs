@@ -29,6 +29,13 @@ public class IdentityUsersSeedData : ISeedData<ApplicationUser>
             },
             new()
             {
+                Id = DefaultUserData.Moderator.Id.ToString(),
+                UserName = DefaultUserData.Moderator.UserName,
+                Email = "mod@mail.com",
+                EmailConfirmed = true
+            },
+            new()
+            {
                 Id = DefaultUserData.Dev.Id.ToString(),
                 UserName = DefaultUserData.Dev.UserName,
                 Email = "dev@mail.com",

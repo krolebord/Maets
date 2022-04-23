@@ -11,9 +11,14 @@ public static class UserExtensions
     {
         return manager.IsSignedIn(user) && user.IsInRole(RoleNames.Admin);
     }
-
-    public static bool IsDev(this SignInManager<ApplicationUser> manager, ClaimsPrincipal user)
+    
+    public static bool IsModerator(this SignInManager<ApplicationUser> manager, ClaimsPrincipal user)
     {
-        return manager.IsSignedIn(user) && user.IsInRole(RoleNames.Developer);
+        return manager.IsSignedIn(user) && user.IsInRole(RoleNames.Moderator);
+    }
+    
+    public static bool IsAdminOrModerator(this SignInManager<ApplicationUser> manager, ClaimsPrincipal user)
+    {
+        return manager.IsSignedIn(user) && (user.IsInRole(RoleNames.Moderator) || user.IsInRole(RoleNames.Admin));
     }
 }

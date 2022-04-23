@@ -22,6 +22,11 @@ public class MaetsUsersData : SeedData<User>
             },
             new()
             {
+                Id = DefaultUserData.Moderator.Id,
+                UserName = DefaultUserData.Moderator.UserName
+            },
+            new()
+            {
                 Id = DefaultUserData.Dev.Id,
                 UserName = DefaultUserData.Dev.UserName
             },

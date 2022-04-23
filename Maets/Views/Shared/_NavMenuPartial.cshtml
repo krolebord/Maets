@@ -24,15 +24,18 @@
             </ul>
         </li>
     }
-    @if (SignInManager.IsAdmin(User))
+    @if (SignInManager.IsAdminOrModerator(User))
     {
         <li class="nav-item dropdown">
             <a class="nav-link" asp-area="" asp-controller="Apps" asp-action="Index">
                 <i class="fas fa-screwdriver-wrench"></i> Administration
             </a>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" asp-controller="Users" asp-action="Index">Users</a></li>
-                <li><a class="dropdown-item" asp-controller="Companies" asp-action="Index">Companies</a></li>
+                @if (SignInManager.IsAdmin(User))
+                {
+                    <li><a class="dropdown-item" asp-controller="Users" asp-action="Index">Users</a></li>
+                    <li><a class="dropdown-item" asp-controller="Companies" asp-action="Index">Companies</a></li>
+                }
                 <li><a class="dropdown-item" asp-controller="Apps" asp-action="Index">Apps</a></li>
             </ul>
         </li>
