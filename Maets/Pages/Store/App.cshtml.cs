@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Maets.Pages;
 
-public class App : PageModel
+public class AppPage : PageModel
 {
     private readonly IMapper _mapper;
     private readonly MaetsDbContext _context;
@@ -18,7 +18,7 @@ public class App : PageModel
     [BindProperty]
     public AppDetailedDto AppDto { get; set; } = null!;
     
-    public App(MaetsDbContext context, IMapper mapper)
+    public AppPage(MaetsDbContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;

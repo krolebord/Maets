@@ -69,6 +69,16 @@ img.avatar {
     background-color: var(--bs-secondary);
 }
 
+.form-check-input {
+    margin-top: 1rem;
+}
+
+.main-col {
+    margin-top: 1rem;
+    max-width: 800px;
+    width: 100%;
+}
+
 select.search-select {}
 select.labels-select {}
 

@@ -1,2 +1,5 @@
 @model string
-<a class="btn btn-sm btn-outline-info label">@Model</a>
+<a asp-page="/store/search" asp-route-labels="@Model"
+   class="btn btn-sm btn-outline-info label">
+    @Model
+</a>

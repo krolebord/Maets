@@ -1,77 +1,73 @@
 @page "{id:guid}"
 @using Maets.Domain.Entities.Identity
 @using Microsoft.AspNetCore.Identity
-@model Maets.Pages.App
+@model Maets.Pages.AppPage
 @inject SignInManager<ApplicationUser> SignInManager
 
 @{
     ViewData["Title"] = Model.AppDto.Title;
 }
 
-<div class="d-flex justify-content-center">
-    <div class="main-col">
-        <h1>@Model.AppDto.Title</h1>
-        <div class="carousel-wrapper">
-            <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-indicators">
-                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 0"></button>
-                    @for (var i = 1; i <= Model.AppDto.ScreenshotUrls.Count; ++i)
-                    {
-                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="@i" aria-label="Slide @i"></button>
-                    }
-                </div>
-                <div class="carousel-inner">
-                    <div class="carousel-item active">
-                        <img src="@Model.AppDto.MainImageUrl" class="d-block w-100" alt="...">
-                    </div>
-                    @foreach (var screenshot in Model.AppDto.ScreenshotUrls)
-                    {
-                        <div class="carousel-item">
-                            <img src="@screenshot" class="d-block w-100" alt="...">
-                        </div>
-                    }
-                </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
+<h1>@Model.AppDto.Title</h1>
+<div class="carousel-wrapper">
+    <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 0"></button>
+            @for (var i = 1; i <= Model.AppDto.ScreenshotUrls.Count; ++i)
+            {
+                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="@i" aria-label="Slide @i"></button>
+            }
+        </div>
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="@Model.AppDto.MainImageUrl" class="d-block w-100" alt="...">
             </div>
+            @foreach (var screenshot in Model.AppDto.ScreenshotUrls)
+            {
+                <div class="carousel-item">
+                    <img src="@screenshot" class="d-block w-100" alt="...">
+                </div>
+            }
         </div>
-        <div class="info-wrapper">
-            <div class="add-to-collection">
-                @if (SignInManager.IsSignedIn(User))
-                {
-                    <h1>Add to collection</h1>
-                    <button class="btn btn-outline-primary"><i class="fas fa-heart"></i></button>
-                }
-                else
-                {
-                    <h1>Sign in to add to collection</h1>
-                }
-            </div>
-            <hr/>
-            <p>Publisher: <partial name="Components/_CompanyPartial" model="Model.AppDto.Publisher.Name"/></p>
-            <p>
-                Developers:&nbsp;
-                @foreach (var developer in Model.AppDto.Developers)
-                {
-                    <partial name="Components/_CompanyPartial" model="developer.Name"/>
-                }
-            </p>
-            <p class="labels">
-                Labels:&nbsp;
-                @foreach (var label in Model.AppDto.Labels)
-                {
-                    <partial name="Components/_LabelPartial" model="label"/>
-                }
-            </p>
-        </div>
-        <div class="content-wrapper">
-            @Html.Raw(Model.AppDto.Description)
-        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
     </div>
+</div>
+<div class="info-wrapper">
+    <div class="add-to-collection">
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <h1>Add to collection</h1>
+            <button class="btn btn-outline-primary"><i class="fas fa-heart"></i></button>
+        }
+        else
+        {
+            <h1>Sign in to add to collection</h1>
+        }
+    </div>
+    <hr/>
+    <p>Publisher: <partial name="Components/_CompanyPartial" model="Model.AppDto.Publisher.Name"/></p>
+    <p>
+        Developers:&nbsp;
+        @foreach (var developer in Model.AppDto.Developers)
+        {
+            <partial name="Components/_CompanyPartial" model="developer.Name"/>
+        }
+    </p>
+    <p class="labels">
+        Labels:&nbsp;
+        @foreach (var label in Model.AppDto.Labels)
+        {
+            <partial name="Components/_LabelPartial" model="label"/>
+        }
+    </p>
+</div>
+<div class="content-wrapper">
+    @Html.Raw(Model.AppDto.Description)
 </div>

@@ -17,6 +17,10 @@ public class AppsProfile : Profile
             .MapImageUrl(x => x.MainImageUrl, app => app.MainImage)
             .ForMember(x => x.ScreenshotUrls, opt => opt.MapFrom(x => x.Screenshots.Select(screenshot => new ImageFileDto(screenshot.Key))));
 
+        CreateMap<App, AppHomeDto>()
+            .MapImageUrl(x => x.MainImageUrl, app => app.MainImage);
+
+        
         CreateMap<App, AppEditDto>()
             .ForMember(x => x.DeveloperIds, opt => opt.MapFrom(app => app.Developers.Select(dev => dev.Id)));
         CreateMap<AppEditDto, App>()

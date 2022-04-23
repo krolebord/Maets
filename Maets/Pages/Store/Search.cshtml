@@ -1,2 +1,44 @@
 @page
-@model Maets.Pages.Search
+@model Maets.Pages.SearchPage
+
+@{
+    ViewData["Title"] = "Search";
+}
+
+<form class="my-3">
+    <div class="input-group">
+        <input asp-for="Query" type="search" id="search-field" class="form-control"/>
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-search"></i>
+        </button>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label">Company</label>
+        <select asp-for="Company" class="form-control search-select" asp-items="Model.CompaniesList">
+            <option selected  disabled value="@null">Published or developed by</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label">Labels</label>
+        <select asp-for="Labels" multiple class="form-control search-select" asp-items="Model.LabelsList"></select>
+    </div>
+</form>
+
+@if (!Model.ValidQuery)
+{
+    
+}
+else if (!Model.Results.Any())
+{
+    <h2>No apps found</h2>
+}
+else
+{
+    <h2>Search result:</h2>
+    foreach (var dto in Model.Results)
+    {
+        <p>@dto.Title</p>
+    }
+}
