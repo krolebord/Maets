@@ -2,8 +2,10 @@ using AutoMapper.EquivalencyExpression;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Maets.Data;
+using Maets.Domain.Constants;
 using Maets.Domain.Entities.Identity;
 using Maets.Extensions;
+using Maets.Models.Exceptions;
 using Maets.Options;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -38,13 +40,27 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
     .AddDefaultTokenProviders()
     .AddEntityFrameworkStores<AuthDbContext>();
 
+builder.Services.AddAuthorization(options => {
+    options.AddPolicy(PolicyNames.Admin, policyBuilder => policyBuilder
+        .RequireAuthenticatedUser()
+        .RequireRole(RoleNames.Admin)
+        .Build());
+    options.AddPolicy(PolicyNames.AdminOrModerator, policyBuilder => policyBuilder
+        .RequireAuthenticatedUser()
+        .RequireRole(RoleNames.Admin, RoleNames.Moderator)
+        .Build());
+});
+
 builder.Services.ConfigureApplicationCookie(options =>
     {
         options.LoginPath = new PathString("/Identity/Account/Login");
         options.AccessDeniedPath = new PathString("/Identity/Account/AccessDenied");
     });
 
-builder.Services.AddRazorPages();
+builder.Services.AddRazorPages(options => {
+    options.Conventions.AuthorizeFolder("/collection");
+    options.Conventions.AuthorizeFolder("/stats", PolicyNames.AdminOrModerator);
+});
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddHttpContextAccessor();
@@ -92,6 +108,17 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.Use(async (context, next) => {
+    try
+    {
+        await next(context);
+    }
+    catch (NotFoundException)
+    {
+        context.Response.Redirect("/notfound");
+    }
+});
 
 app.MapControllerRoute(
     name: "default",

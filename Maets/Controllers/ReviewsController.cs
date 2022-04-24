@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Maets.Data;
+using Maets.Domain.Constants;
 using Maets.Domain.Entities;
 using Maets.Extensions;
 using Maets.Models.Dtos.Reviews;
@@ -105,7 +106,7 @@ namespace Maets.Controllers
         }
 
         // GET: Reviews/Edit/5
-        [Authorize]
+        [Authorize(Roles = RoleNames.AdminOrModerator)]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
@@ -117,6 +118,11 @@ namespace Maets.Controllers
                 .Include(x => x.App)
                 .Include(x => x.Author)
                 .FirstOrDefaultAsync(x => x.Id == id.Value);
+
+            if (review is null)
+            {
+                throw new NotFoundException<Review>();
+            }
             
             return View(_mapper.Map<ReviewWriteDto>(review));
         }
@@ -124,7 +130,7 @@ namespace Maets.Controllers
         // POST: Reviews/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(Roles = RoleNames.AdminOrModerator)]
         public async Task<IActionResult> Edit(Guid id, ReviewWriteDto reviewDto)
         {
             if (!ModelState.IsValid)
@@ -151,7 +157,7 @@ namespace Maets.Controllers
         // POST: Reviews/Delete/5
         [HttpPost, ActionName("delete")]
         [ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(Roles = RoleNames.AdminOrModerator)]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var review = await _context.Reviews.FindAsync(id);
