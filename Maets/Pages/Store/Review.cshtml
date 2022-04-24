@@ -1,0 +1,31 @@
+@page "{id:guid}"
+@using Maets.Domain.Entities.Identity
+@using Maets.Extensions
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Maets.Pages.ReviewPage
+@inject SignInManager<ApplicationUser> SignInManager
+
+@{
+    ViewData["Title"] = "Review";
+}
+
+<h1>@Model.ReviewDto.Title - @($"{Model.ReviewDto.App.Title} review")</h1>
+<div class="info-wrapper">
+    <p>Author: @Model.ReviewDto.Author.UserName</p>
+    <P>Score: @Model.ReviewDto.Score</p>
+    <p>Posted: @Model.ReviewDto.CreationDate.ToString("d")</p>
+</div>
+<div class="content-wrapper">
+    @Html.Raw(Model.ReviewDto.Description)
+</div>
+
+@if (SignInManager.IsAdminOrModerator(User))
+{
+    <div class="d-flex mt-2">
+        <a asp-controller="Reviews" asp-action="Edit" asp-route-id="@Model.ReviewDto.Id" class="btn btn-primary">Edit</a>
+        <form asp-controller="Reviews" asp-action="Delete" asp-route-id="@Model.ReviewDto.Id">
+            <button class="btn btn-danger">Delete</button>
+        </form>
+    </div>
+}

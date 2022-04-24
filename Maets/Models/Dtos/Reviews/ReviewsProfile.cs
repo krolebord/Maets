@@ -8,5 +8,8 @@ public class ReviewsProfile : Profile
     public ReviewsProfile()
     {
         CreateMap<Review, ReviewReadDto>();
+        
+        CreateMap<Review, ReviewWriteDto>()
+            .ReverseMap();
     }
 }

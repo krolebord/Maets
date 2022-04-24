@@ -14,7 +14,7 @@ public class ReviewReadDto : EntityDto
     
     public DateTimeOffset CreationDate { get; set; }
 
-    public UserShortDto Author { get; set; }
+    public UserShortDto Author { get; set; } = null!;
 
-    public AppShortDto App { get; set; }
+    public AppShortDto App { get; set; } = null!;
 }

@@ -3,9 +3,9 @@
 <div class="card my-2 w-100">
     <div class="row no-gutters mx-1">
         <div class="col-md-2 d-flex justify-content-center align-items-center">
-            <span class="score-display">
+            <a class="score-display" asp-page="/store/review" asp-route-id="@Model.Id">
                 @Model.Score
-            </span>
+            </a>
         </div>
         <div class="col-md-10 d-flex">
             <div class="card-body">

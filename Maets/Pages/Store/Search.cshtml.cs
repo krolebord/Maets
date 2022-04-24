@@ -43,6 +43,10 @@ public class SearchPage : PageModel
         await LoadSelectLists();
         
         var query = _context.Apps
+            .Include(x => x.MainImage)
+            .Include(x => x.Publisher)
+            .Include(x => x.Developers)
+            .Include(x => x.Labels)
             .WhereIf(x => x.Title.Contains(Query!), Query is not null)
             .WhereIf(x => x.Publisher!.Name == Company || x.Developers.Any(company => company.Name == Company), Company is not null)
             .WhereIf(x => x.Labels.Any(label => Labels!.Contains(label.Name)), Labels?.Any() == true);
