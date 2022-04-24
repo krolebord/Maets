@@ -1,0 +1,20 @@
+@model Maets.Models.Dtos.Reviews.ReviewReadDto
+
+<div class="card my-2 w-100">
+    <div class="row no-gutters mx-1">
+        <div class="col-md-2 d-flex justify-content-center align-items-center">
+            <span class="score-display">
+                @Model.Score
+            </span>
+        </div>
+        <div class="col-md-10 d-flex">
+            <div class="card-body">
+                <h5 class="card-title">@Model.Title</h5>
+                <p class="card-text">Author: @Model.Author.UserName</p>
+                <p class="card-text">
+                    <small class="text-muted">Released at @Model.CreationDate.ToString("d")</small>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

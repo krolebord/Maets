@@ -1,0 +1,55 @@
+@using ChartJSCore.Models
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using System.Globalization
+@using ChartJSCore.Helpers
+@model Maets.Models.Dtos.Apps.AppReviewsDto
+
+@{
+    var chart = new Chart
+    {
+        Type = Enums.ChartType.Line,
+        Options = new Options
+        {
+          Scales = new Dictionary<string, Scale>
+          {
+              {"y", new Scale
+              {
+                  Min = 0,
+                  Max = 100
+              }}
+          }
+        },
+        Data = new Data
+        {
+            Labels = Model.ScoresData
+                .Select(x => CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(x.Month))
+                .ToList(),
+            Datasets = new List<Dataset>()
+            {
+                new LineDataset()
+                {
+                    Label = "Scores over time",
+                    Data = Model.ScoresData
+                        .Select(x => x.AverageScore > 0 ? new double?(x.AverageScore) : null)
+                        .ToList(),
+                    BackgroundColor = new List<ChartColor> { ChartColor.FromHexString("#1AA7EC") },
+                    BorderColor = new List<ChartColor> { ChartColor.FromHexString("#20374c") }
+                }
+            }
+        }
+    };
+
+}
+
+<h2>Reviews:</h2>
+<h3>Average score: @Model.AverageScore</h3>
+<canvas id="scoreschart"></canvas>
+@foreach (var review in Model.Reviews)
+{
+    <partial name="Components/_ReviewCardPartial" model="review"/>
+}
+
+<partial name="Scripts/_AppScoresChartScriptsPartial"/>
+<script>
+    @Html.Raw(chart.CreateChartCode("scoreschart"))
+</script>

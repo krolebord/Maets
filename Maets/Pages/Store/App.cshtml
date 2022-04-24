@@ -40,7 +40,7 @@
     </div>
 </div>
 <div class="info-wrapper">
-    <div class="add-to-collection">
+    <div class="action-row">
         @if (SignInManager.IsSignedIn(User))
         {
             @if (Model.AppDto.IsInCollection)
@@ -83,3 +83,46 @@
 <div class="content-wrapper">
     @Html.Raw(Model.AppDto.Description)
 </div>
+
+<div class="info-wrapper">
+    @if (!SignInManager.IsSignedIn(User))
+    {
+        <div class="action-row">
+            <h2>Your review</h2>
+            <h2>Sign in to add review</h2>
+        </div>
+        
+    }
+    else if (Model.UserReview is not null)
+    {
+        <h2>Your review</h2>
+        <partial name="Components/_ReviewCardPartial" model="Model.UserReview"/>
+    }
+    else
+    {
+        <div class="action-row">
+            <h2>Your review</h2>
+            <a class="btn btn-primary" asp-controller="Reviews" asp-action="Create" asp-route-id="@Model.AppDto.Id">
+                Add review
+            </a>
+        </div>
+    }
+</div>
+
+<div class="reviews-wrapper">
+    <div class="d-flex justify-content-center w-100">
+        <button type="button" id="load-reviews-button" class="btn btn-primary">Load Reviews</button>
+    </div>
+    <div id="reviews"></div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("#load-reviews-button").click(function () {
+                $("#reviews").load("?handler=AppReviews");
+                $("#load-reviews-button").remove();
+            });
+        });
+    </script>
+}

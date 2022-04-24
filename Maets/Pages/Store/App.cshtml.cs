@@ -1,36 +1,39 @@
-using AutoMapper;
-using Maets.Data;
-using Maets.Domain.Entities;
 using Maets.Domain.Entities.Identity;
 using Maets.Extensions;
 using Maets.Models.Dtos.Apps;
-using Maets.Models.Exceptions;
+using Maets.Models.Dtos.Reviews;
+using Maets.Services.Apps;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace Maets.Pages;
 
 public class AppPage : PageModel
 {
-    private readonly IMapper _mapper;
-    private readonly MaetsDbContext _context;
+    private readonly IAppsService _appsService;
     private readonly SignInManager<ApplicationUser> _signInManager;
-
-    [BindProperty]
-    public AppDetailedDto AppDto { get; set; } = null!;
     
-    public AppPage(MaetsDbContext context, IMapper mapper, SignInManager<ApplicationUser> signInManager)
+    public AppDetailedDto AppDto { get; set; } = null!;
+
+    public ReviewReadDto? UserReview { get; set; } = null;
+
+    public AppPage(SignInManager<ApplicationUser> signInManager, IAppsService appsService)
     {
-        _context = context;
-        _mapper = mapper;
         _signInManager = signInManager;
+        _appsService = appsService;
     }
     
     public async Task<IActionResult> OnGetAsync(Guid id)
     {
-        AppDto = await GetApp(id);
+        AppDto = await _appsService.GetDetailed(id, User.FindId());
+
+        if (_signInManager.IsSignedIn(User))
+        {
+            UserReview = await _appsService.FindUserReview(id, User.GetId());
+        }
         
         return Page();
     }
@@ -42,15 +45,7 @@ public class AppPage : PageModel
             return RedirectToPage();
         }
 
-        if (!await AppIsInCollection(id))
-        {
-            _context.UserCollections.Add(new AppsUserCollection()
-            {
-                AppId = id,
-                UserId = User.GetId()
-            });
-            await _context.SaveChangesAsync();
-        }
+        await _appsService.EnsureInCollection(id, User.GetId());
 
         return RedirectToPage();
     }
@@ -62,46 +57,22 @@ public class AppPage : PageModel
             return RedirectToPage();
         }
 
-        if (await AppIsInCollection(id))
-        {
-            var collectionEntry = await _context.UserCollections
-                .FirstAsync(x => x.AppId == id && x.UserId == User.GetId());
-            _context.UserCollections.Remove(collectionEntry);
-            await _context.SaveChangesAsync();
-        }
+        await _appsService.EnsureRemovedFromCollection(id, User.GetId()); 
 
         return RedirectToPage();
     }
 
-    private Task<bool> AppIsInCollection(Guid appId)
+    public async Task<IActionResult> OnGetAppReviews(Guid id)
     {
-        return _context.UserCollections
-            .AnyAsync(x => x.UserId == User.GetId() && x.AppId == appId);
-    }
-    
-    private async Task<AppDetailedDto> GetApp(Guid id)
-    {
-        var app = await _context.Apps
-            .Include(x => x.Publisher)
-            .Include(x => x.Developers)
-            .Include(x => x.MainImage)
-            .Include(x => x.Screenshots)
-            .Include(x => x.Labels)
-            .Include(x => x.Reviews)
-            .FirstOrDefaultAsync(x => x.Id == id);
+        var reviews = await _appsService.GetReviews(id);
 
-        if (app is null)
+        return new PartialViewResult
         {
-            throw new NotFoundException<App>();
-        }
-
-        var dto = _mapper.Map<AppDetailedDto>(app);
-
-        if (_signInManager.IsSignedIn(User))
-        {
-            dto.IsInCollection = await AppIsInCollection(id);
-        }
-
-        return dto;
+            ViewName = "Components/_ReviewPartial",
+            ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
+            {
+                Model = reviews
+            }
+        };
     }
 }

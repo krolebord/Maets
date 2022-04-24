@@ -14,4 +14,10 @@ public static class ClaimsPrincipalExtensions
     {
         return Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
     }
+    
+    public static Guid? FindId(this ClaimsPrincipal user)
+    {
+        var value = user.FindFirstValue(ClaimTypes.NameIdentifier);
+        return value is null ? null : Guid.Parse(value);
+    }
 }

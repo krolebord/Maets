@@ -28,7 +28,7 @@ public class HomePage : PageModel
     public async Task OnGetAsync()
     {
         var topAppsQuery = _context.Apps
-            .OrderBy(x => x.Reviews.Average(r => r.Score))
+            .OrderByDescending(x => x.Reviews.Average(r => r.Score))
             .Take(5);
         TopApps = await GetAppsFromQuery(topAppsQuery);
 
@@ -40,7 +40,7 @@ public class HomePage : PageModel
         
         var upcomingReleasesQuery = _context.Apps
             .Where(x => x.ReleaseDate == null)
-            .OrderBy(x => x.InUserCollections.Count)
+            .OrderByDescending(x => x.InUserCollections.Count)
             .Take(5);
         UpcomingReleases = await GetAppsFromQuery(upcomingReleasesQuery);
     }

@@ -39,6 +39,6 @@ else
     <h2>Search result:</h2>
     foreach (var dto in Model.Results)
     {
-        <p>@dto.Title</p>
+        <partial name="Components/_AppCardPartial" model="dto"/>
     }
 }

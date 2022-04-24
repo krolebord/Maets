@@ -1,48 +1,46 @@
-@model Maets.Domain.Entities.Review
+@model Maets.Models.Dtos.Reviews.ReviewWriteDto
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create review";
 }
 
-<h1>Create</h1>
+<h1>Create Review</h1>
+<form asp-action="Create">
+    <input asp-for="AppId" type="hidden"/>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row">
 
-<h4>Review</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Score" class="control-label"></label>
-                <input asp-for="Score" class="form-control" />
-                <span asp-validation-for="Score" class="text-danger"></span>
-            </div>
+        <div class="col-md-6">
             <div class="form-group">
                 <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
+                <input asp-for="Title" class="form-control"/>
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
+        </div>
+        
+        <div class="col-md-6">
             <div class="form-group">
-                <label asp-for="AuthorId" class="control-label"></label>
-                <select asp-for="AuthorId" class ="form-control" asp-items="ViewBag.AuthorId"></select>
+                <label class="control-label">Score</label>
+                <input asp-for="Score" min="0" max="100" class="form-control"/>
+                <span asp-validation-for="Score" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="AppId" class="control-label"></label>
-                <select asp-for="AppId" class ="form-control" asp-items="ViewBag.AppId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="Id" class="control-label"></label>
-                <input asp-for="Id" class="form-control" />
-                <span asp-validation-for="Id" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
+
+        <div class="w-100 form-group">
+            <label class="control-label">Description</label>
+            <textarea asp-for="Description" class="html-editor"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
     </div>
-</div>
+    <div class="my-2">
+        <partial name="_BackToIndexPartial"/>
+        <div class="form-group d-inline-block">
+            <input type="submit" value="Create" class="btn btn-primary"/>
+        </div>
+    </div>
+</form>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
+@section Scripts
+{
+    <partial name="Scripts/_TinyMcScriptsPartial"/>
+}

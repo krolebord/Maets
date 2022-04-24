@@ -112,6 +112,24 @@ img.app-image {
     object-fit: contain;
 }
 
+.action-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0.5rem 0;
+}
+
+.score-display {
+    --score-size: 75px;
+    font-size: 2rem;
+    width: var(--score-size);
+    height: var(--score-size);
+    display: block;
+    background-color: var(--bs-primary);
+    text-align: center;
+    line-height: var(--score-size);
+}
+
 select.search-select {}
 select.labels-select {}
 

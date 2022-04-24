@@ -1,4 +1,5 @@
 using Maets.Models.Dtos.Companies;
+using Maets.Models.Dtos.Reviews;
 using Maets.Models.Dtos.Shared;
 
 namespace Maets.Models.Dtos.Apps;
@@ -24,4 +25,6 @@ public class AppDetailedDto : EntityDto
     public ICollection<string> ScreenshotUrls { get; set; } = new List<string>();
 
     public ICollection<string> Labels { get; set; } = new List<string>();
+
+    public ICollection<ReviewReadDto> Reviews { get; set; } = new List<ReviewReadDto>();
 }

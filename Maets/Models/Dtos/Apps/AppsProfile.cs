@@ -20,6 +20,7 @@ public class AppsProfile : Profile
         CreateMap<App, AppHomeDto>()
             .MapImageUrl(x => x.MainImageUrl, app => app.MainImage);
 
+        CreateMap<App, AppShortDto>();
         
         CreateMap<App, AppEditDto>()
             .ForMember(x => x.DeveloperIds, opt => opt.MapFrom(app => app.Developers.Select(dev => dev.Id)));
