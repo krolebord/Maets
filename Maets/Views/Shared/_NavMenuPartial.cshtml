@@ -23,6 +23,14 @@
     }
     @if (SignInManager.IsAdminOrModerator(User))
     {
+        <li class="nav-item">
+            <a class="nav-link" asp-page="/stats/index">
+                <i class="fa-solid fa-table"></i> Stats
+            </a>
+        </li>
+    }
+    @if (SignInManager.IsAdminOrModerator(User))
+    {
         <li class="nav-item dropdown">
             <a class="nav-link" asp-area="" asp-controller="Apps" asp-action="Index">
                 <i class="fas fa-screwdriver-wrench"></i> Administration

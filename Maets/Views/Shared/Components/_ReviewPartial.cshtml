@@ -33,7 +33,8 @@
                         .Select(x => x.AverageScore > 0 ? new double?(x.AverageScore) : null)
                         .ToList(),
                     BackgroundColor = new List<ChartColor> { ChartColor.FromHexString("#1AA7EC") },
-                    BorderColor = new List<ChartColor> { ChartColor.FromHexString("#20374c") }
+                    BorderColor = new List<ChartColor> { ChartColor.FromHexString("#20374c") },
+                    CubicInterpolationMode = "monotone"
                 }
             }
         }

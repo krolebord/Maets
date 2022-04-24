@@ -180,7 +180,7 @@ public class MaetsDbContext : DbContext
                         .HasConstraintName("apps_labels_appid_foreign"),
                     configureRight => configureRight
                         .HasOne(x => x.Label)
-                        .WithMany()
+                        .WithMany(x => x.AppsLabels)
                         .HasForeignKey(d => d.LabelId)
                         .OnDelete(DeleteBehavior.ClientSetNull)
                         .HasConstraintName("apps_labels_labelid_foreign"),

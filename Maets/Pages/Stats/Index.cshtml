@@ -1,0 +1,64 @@
+@page
+@using System.Globalization
+@using ChartJSCore.Helpers
+@using ChartJSCore.Models
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using System.Drawing
+@using ColorMine.ColorSpaces
+@model Maets.Pages.Stats.StatsPage
+
+@{
+    var rng = new Random();
+
+    Func<ChartColor> colorGenerator = () => {
+        var hsl = new Hsl
+        {
+            H = rng.Next(180, 358),
+            S = (double)rng.Next(42, 98) / 100,
+            L = (double)rng.Next(40, 90) / 100,
+        };
+        var rgb = hsl.ToRgb();
+        return ChartColor.FromRgb((byte)rgb.R, (byte)rgb.G, (byte)rgb.B);
+    };
+
+    var chart = new Chart
+    {
+        Type = Enums.ChartType.Pie,
+        Data = new Data
+        {
+            Labels = Model.LabelsStats
+                .Select(x => x.LabelName)
+                .ToList(),
+            Datasets = new List<Dataset>
+            {
+                new PieDataset()
+                {
+                    Label = "Labels usage chart",
+                    Data = Model.LabelsStats
+                        .Select(x => new double?(x.AppsCount))
+                        .ToList(),
+                    HoverOffset = 4,
+                    BackgroundColor = Model.LabelsStats
+                        .Select(_ => colorGenerator())
+                        .ToList(),
+                    BorderColor = new List<ChartColor> { ChartColor.FromHexString("#20374c") },
+                }
+            }
+        }
+    };
+
+    ViewData["Title"] = "Stats";
+}
+
+<div class="w-100 d-flex justify-content-center">
+    <div style="max-width: 500px; width: 500px">
+        <canvas id="labelschart"></canvas>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="Scripts/_AppScoresChartScriptsPartial"/>
+    <script>
+        @Html.Raw(chart.CreateChartCode("labelschart"))
+    </script>
+}
