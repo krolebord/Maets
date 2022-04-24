@@ -7,32 +7,55 @@
 
 <h1>Top apps</h1>
 
-<div id="topAppsCarousel" class="carousel slide" data-ride="carousel">
-    <ol class="carousel-indicators">
-        <li data-target="#topAppsCarousel" data-slide-to="0" class="active"></li>
-        <li data-target="#topAppsCarousel" data-slide-to="1"></li>
-        <li data-target="#topAppsCarousel" data-slide-to="2"></li>
-    </ol>
-    <div class="carousel-inner">
-        <div class="carousel-item active">
-            <img class="d-block w-100" src="..." alt="First slide">
+<div class="carousel-wrapper">
+    <div id="topAppsCarousel" class="carousel slide" data-ride="carousel">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#topAppsCarousel" data-bs-slide-to="0" class="active"></button>
+            @for (int i = 1; i < Model.TopApps.Count; ++i)
+            {
+                <button type="button" data-bs-target="#topAppsCarousel" data-bs-slide-to="@i"></button>
+            }
         </div>
-        <div class="carousel-item">
-            <img class="d-block w-100" src="..." alt="Second slide">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <a asp-page="/store/app" asp-route-id="@Model.TopApps.First().Id">
+                    <img class="d-block w-100" src="@Model.TopApps.First().MainImageUrl" alt="app">
+                </a>
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>@Model.TopApps.First().Title</h5>
+                </div>
+            </div>
+            @foreach (var app in Model.TopApps.Skip(1))
+            {
+                <div class="carousel-item">
+                    <a asp-page="/store/app" asp-route-id="@app.Id">
+                        <img class="d-block w-100" src="@app.MainImageUrl" alt="app">
+                    </a>
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>@app.Title</h5>
+                    </div>
+                </div>
+            }
         </div>
-        <div class="carousel-item">
-            <img class="d-block w-100" src="..." alt="Third slide">
-        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#topAppsCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#topAppsCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
     </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#topAppsCarousel" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#topAppsCarousel" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-    </button>
 </div>
 
 <h1>New releases</h1>
-<h1>Free apps</h1>
+@foreach (var app in Model.NewReleases)
+{
+    <partial name="Components/_AppCardPartial" model="app"/>
+}
+
+<h1>Upcoming releases</h1>
+@foreach (var app in Model.UpcomingReleases)
+{
+    <partial name="Components/_AppCardPartial" model="app"/>
+}

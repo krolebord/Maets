@@ -21,4 +21,6 @@ public sealed class App : Entity
     public ICollection<Label> Labels { get; set; } = new HashSet<Label>();
 
     public ICollection<Review> Reviews { get; set; } = new HashSet<Review>();
+
+    public ICollection<User> InUserCollections { get; set; } = new HashSet<User>();
 }

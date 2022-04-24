@@ -1,11 +1,10 @@
 using Maets.Models.Dtos.Companies;
+using Maets.Models.Dtos.Shared;
 
 namespace Maets.Models.Dtos.Apps;
 
-public class AppDetailedDto
+public class AppDetailedDto : EntityDto
 {
-    public Guid Id { get; set; }
-    
     public string Title { get; set; } = string.Empty;
     
     public string Description { get; set; } = string.Empty;
@@ -13,6 +12,8 @@ public class AppDetailedDto
     public DateTimeOffset? ReleaseDate { get; set; }
     
     public decimal Price { get; set; }
+
+    public bool IsInCollection { get; set; } = false;
 
     public CompanyShortDto Publisher { get; set; } = null!;
 

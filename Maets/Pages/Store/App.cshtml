@@ -43,8 +43,20 @@
     <div class="add-to-collection">
         @if (SignInManager.IsSignedIn(User))
         {
-            <h1>Add to collection</h1>
-            <button class="btn btn-outline-primary"><i class="fas fa-heart"></i></button>
+            @if (Model.AppDto.IsInCollection)
+            {
+                <h1>In collection</h1>
+                <form asp-page-handler="RemoveFromCollection">
+                    <button class="btn btn-outline-danger"><i class="fas fa-heart"></i></button>
+                </form>
+            }
+            else
+            {
+                <h1>Add to collection</h1>
+                <form asp-page-handler="AddToCollection">
+                    <button class="btn btn-outline-primary"><i class="fa-regular fa-heart"></i></button>
+                </form>
+            }
         }
         else
         {

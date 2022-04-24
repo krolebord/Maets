@@ -1,0 +1,41 @@
+@model Maets.Models.Dtos.Apps.AppHomeDto
+
+<div class="card my-2 w-100">
+    <div class="row no-gutters ms-1">
+        <div class="col-md-3 d-flex">
+            <a class="d-flex" asp-page="/store/app" asp-route-id="@Model.Id">
+                <img src="@Model.MainImageUrl" class="card-img app-image" alt="...">
+            </a>
+        </div>
+        <div class="col-md-9">
+            <div class="card-body">
+                <h5 class="card-title">@Model.Title</h5>
+                <p class="card-text">Publisher: <partial name="Components/_CompanyPartial" model="Model.Publisher.Name"/></p>
+                <p class="card-text">
+                    Developers:&nbsp;
+                    @foreach (var dev in Model.Developers)
+                    {
+                        <partial name="Components/_CompanyPartial" model="dev.Name"/>
+                    }
+                </p>
+                <p class="card-text">
+                    Labels:&nbsp;
+                    @foreach (var label in Model.Labels)
+                    {
+                        <partial name="Components/_LabelPartial" model="label"/>
+                    }
+                </p>
+                <p class="card-text">
+                    @if (Model.ReleaseDate is not null)
+                    {
+                        <small class="text-muted">Released at @Model.ReleaseDate.Value.ToString("d")</small>
+                    }
+                    else
+                    {
+                        <small class="text-muted">Not released</small>
+                    }
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

@@ -34,12 +34,13 @@ CREATE UNIQUE INDEX "labels_name_unique"
 
 CREATE TABLE "Reviews"
 (
-    "Id"          UNIQUEIDENTIFIER NOT NULL,
-    "Score"       INT              NOT NULL,
-    "Title"       NVARCHAR(255)    NOT NULL,
-    "Description" NVARCHAR(max)    NOT NULL DEFAULT N'',
-    "AuthorId"    UNIQUEIDENTIFIER NOT NULL,
-    "AppId"       UNIQUEIDENTIFIER NOT NULL,
+    "Id"           UNIQUEIDENTIFIER NOT NULL,
+    "Score"        INT              NOT NULL,
+    "Title"        NVARCHAR(255)    NOT NULL,
+    "Description"  NVARCHAR(max)    NOT NULL DEFAULT N'',
+    "AuthorId"     UNIQUEIDENTIFIER NOT NULL,
+    "AppId"        UNIQUEIDENTIFIER NOT NULL,
+    "CreationDate" datetimeoffset   NOT NULL DEFAULT getdate(),
     CONSTRAINT "reviews_id_primary" PRIMARY KEY ("Id")
 );
 
@@ -75,6 +76,14 @@ CREATE TABLE "App_Screenshots"
     "AppId"  UNIQUEIDENTIFIER NOT NULL,
     "Order"  INT NOT NULL DEFAULT 0,
     CONSTRAINT "app_screenshots_id_primary" PRIMARY KEY ("Id")
+);
+
+CREATE TABLE "Apps_UserCollection"
+(
+    "Id"     UNIQUEIDENTIFIER NOT NULL,
+    "UserId" UNIQUEIDENTIFIER NOT NULL,
+    "AppId"  UNIQUEIDENTIFIER NOT NULL,
+    CONSTRAINT "app_usercollection_id_primary" PRIMARY KEY ("Id")
 );
 
 create table "Users"
@@ -126,6 +135,11 @@ ALTER TABLE "App_Screenshots"
     ADD
         CONSTRAINT "app_screenshots_appid_foreign" FOREIGN KEY ("AppId") REFERENCES "Apps" ("Id") ON DELETE CASCADE,
         CONSTRAINT "app_screenshots_fileid_foreign" FOREIGN KEY ("FileId") REFERENCES "MediaFiles" ("Id") ON DELETE CASCADE;
+
+ALTER TABLE "Apps_UserCollection"
+    ADD
+        CONSTRAINT "app_usercollection_appid_foreign" FOREIGN KEY ("AppId") REFERENCES "Apps" ("Id") ON DELETE CASCADE,
+        CONSTRAINT "app_usercollection_userid_foreign" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id") ON DELETE CASCADE;
 
 Alter TABLE "Reviews"
     ADD

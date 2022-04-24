@@ -1,9 +1,9 @@
+using Maets.Models.Dtos.Shared;
+
 namespace Maets.Models.Dtos.Apps;
 
-public class AppTableDto
+public class AppTableDto : EntityDto
 {
-    public Guid Id { get; set; }
-    
     public string Title { get; set; } = null!;
 
     public DateTimeOffset? ReleaseDate { get; set; }

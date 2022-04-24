@@ -1,6 +1,6 @@
 ﻿namespace Maets.Domain.Entities;
 
-public sealed class Review : Entity
+public sealed class Review : Entity, IAuditedEntity
 {
 
     public int Score { get; set; }
@@ -9,6 +9,8 @@ public sealed class Review : Entity
 
     public string Description { get; set; } = null!;
 
+    public DateTimeOffset CreationDate { get; set; }
+    
     public Guid AuthorId { get; set; }
 
     public Guid AppId { get; set; }

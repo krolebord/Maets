@@ -26,10 +26,26 @@ public class MaetsDbContext : DbContext
 
     public DbSet<CompanyEmployee> CompanyEmployees { get; set; } = null!;
 
-    public MaetsDbContext() {}
+    public DbSet<AppsUserCollection> UserCollections { get; set; } = null!;
+
+    public MaetsDbContext()
+    {}
 
     public MaetsDbContext(DbContextOptions<MaetsDbContext> options)
         : base(options) {}
+
+    public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new CancellationToken())
+    {
+        foreach (var entity in ChangeTracker.Entries().Where(p => p.State == EntityState.Added))
+        {
+            if (entity.Entity is IAuditedEntity created)
+            {
+                created.CreationDate = DateTimeOffset.Now;
+            }
+        }
+        
+        return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -206,7 +222,7 @@ public class MaetsDbContext : DbContext
                 .HasConstraintName("reviews_appid_foreign");
 
             entity.HasOne(d => d.Author)
-                .WithMany()
+                .WithMany(u => u.Reviews)
                 .HasForeignKey(d => d.AuthorId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("reviews_authorid_foreign");
@@ -227,6 +243,28 @@ public class MaetsDbContext : DbContext
                 .HasForeignKey(d => d.AvatarId)
                 .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("users_avatarid_foreign");
+
+            entity.HasMany(x => x.Collection)
+                .WithMany(app => app.InUserCollections)
+                .UsingEntity<AppsUserCollection>(
+                    configureRight => configureRight
+                        .HasOne(x => x.App)
+                        .WithMany()
+                        .HasForeignKey(d => d.AppId)
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("app_usercollection_appid_foreign"),
+                    configureRight => configureRight
+                        .HasOne(x => x.User)
+                        .WithMany()
+                        .HasForeignKey(d => d.UserId)
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("app_usercollection_userid_foreign"),
+                    builder => builder
+                        .ToTable("Apps_UserCollection")
+                        .Property(e => e.Id)
+                        .ValueGeneratedOnAdd()
+                        .HasValueGenerator<GuidValueGenerator>()
+                );
         });
     }
 }

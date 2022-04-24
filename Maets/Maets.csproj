@@ -79,6 +79,8 @@
     <_ContentIncludedByDefault Remove="wwwroot\lib\jquery-validation\dist\jquery.validate.js" />
     <_ContentIncludedByDefault Remove="wwwroot\lib\jquery-validation\dist\jquery.validate.min.js" />
     <_ContentIncludedByDefault Remove="wwwroot\lib\jquery-validation\LICENSE.md" />
+    <_ContentIncludedByDefault Remove="Views\Store\Index.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Store\Search.cshtml" />
   </ItemGroup>
 
   <ItemGroup>

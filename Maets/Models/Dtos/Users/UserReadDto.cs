@@ -1,9 +1,9 @@
+using Maets.Models.Dtos.Shared;
+
 namespace Maets.Models.Dtos.Users;
 
-public record UserReadDto
+public class UserReadDto : EntityDto
 {
-    public Guid Id { get; init; } = Guid.Empty;
-
     public string UserName { get; init; } = null!;
 
     public string? AvatarUrl { get; init; }

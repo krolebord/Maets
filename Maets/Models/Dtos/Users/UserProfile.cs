@@ -10,5 +10,7 @@ public class UserProfile : Profile
     {
         CreateMap<User, UserReadDto>()
             .MapAvatarUrl(dto => dto.AvatarUrl, user => user.Avatar);
+
+        CreateMap<User, UserShortDto>();
     }
 }

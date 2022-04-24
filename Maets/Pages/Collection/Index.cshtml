@@ -1,0 +1,12 @@
+@page
+@model Maets.Pages.Collection.CollectionPage
+
+@{
+    ViewData["Title"] = "Collection";
+}
+
+<h1>Collection</h1>
+@foreach (var app in Model.Collection)
+{
+    <partial name="Components/_AppCardPartial" model="app"/>
+}

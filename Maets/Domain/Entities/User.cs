@@ -10,4 +10,8 @@ public class User : Entity
     public MediaFile? Avatar { get; set; }
     
     public ICollection<Company> Companies { get; set; } = new HashSet<Company>();
+
+    public ICollection<Review> Reviews { get; set; } = new HashSet<Review>();
+
+    public ICollection<App> Collection { get; set; } = new HashSet<App>();
 }

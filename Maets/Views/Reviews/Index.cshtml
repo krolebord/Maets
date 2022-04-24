@@ -1,0 +1,50 @@
+@using Maets.Models.Dtos.Reviews
+@using Maets.Models.ViewModels
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model IEnumerable<Maets.Models.Dtos.Reviews.ReviewReadDto>
+
+@{
+    ViewData["Title"] = "Reviews";
+    
+    var tableModel = new TableViewModel<ReviewReadDto>
+    {
+        CanCreate = false,
+        CanDelete = true,
+        CanEdit = true,
+        CanViewDetails = true,
+        ItemIdSelector = dto => dto.Id,
+        Items = Model,
+        Columns = new List<TableViewModel<ReviewReadDto>.Column>
+        {
+            new()
+            {
+                Header = "Title",
+                ValueSelector = dto => dto.Title
+            },
+            new()
+            {
+                Header = "Date",
+                ValueSelector = dto => dto.CreationDate.ToString("d")
+            },
+            new()
+            {
+                Header = "Score",
+                ValueSelector = dto => dto.Score.ToString()
+            },
+            new()
+            {
+                Header = "Author",
+                ValueSelector = dto => dto.Author.UserName
+            },
+            new()
+            {
+                Header = "App",
+                ValueSelector = dto => dto.App.Title
+            }
+        }
+    };
+}
+
+<h1>Reviews</h1>
+
+<partial name="_TablePartial" model="tableModel"/>

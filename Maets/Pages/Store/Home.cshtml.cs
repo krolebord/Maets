@@ -28,7 +28,7 @@ public class HomePage : PageModel
     public async Task OnGetAsync()
     {
         var topAppsQuery = _context.Apps
-            .OrderBy(x => x.Title) // TODO Order by top
+            .OrderBy(x => x.Reviews.Average(r => r.Score))
             .Take(5);
         TopApps = await GetAppsFromQuery(topAppsQuery);
 
@@ -40,14 +40,19 @@ public class HomePage : PageModel
         
         var upcomingReleasesQuery = _context.Apps
             .Where(x => x.ReleaseDate == null)
-            .OrderBy(x => x.Title) // TODO Order by collections
+            .OrderBy(x => x.InUserCollections.Count)
             .Take(5);
         UpcomingReleases = await GetAppsFromQuery(upcomingReleasesQuery);
     }
 
     private async Task<ICollection<AppHomeDto>> GetAppsFromQuery(IQueryable<App> queryable)
     {
-        var apps = await queryable.ToListAsync();
+        var apps = await queryable
+            .Include(x => x.Publisher)
+            .Include(x => x.MainImage)
+            .Include(x => x.Developers)
+            .Include(x => x.Labels)
+            .ToListAsync();
         return _mapper.Map<List<AppHomeDto>>(apps);
     }
 }

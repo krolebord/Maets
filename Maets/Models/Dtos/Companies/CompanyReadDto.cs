@@ -1,9 +1,9 @@
+using Maets.Models.Dtos.Shared;
+
 namespace Maets.Models.Dtos.Companies;
 
-public record CompanyReadDto
+public class CompanyReadDto : EntityDto
 {
-    public Guid Id { get; init; }
-
     public string Name { get; init; }
 
     public string Description { get; init; }
