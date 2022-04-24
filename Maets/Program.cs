@@ -90,7 +90,9 @@ else
     app.UseHsts();
 }
 
+#if !DEBUG
 app.UseHttpsRedirection();
+#endif
 
 var resourcesPath = app.Configuration[LocalFilesStorageOptions.ResourcesPathKey];
 var resourcesFolder = Path.Combine(app.Environment.ContentRootPath, resourcesPath);

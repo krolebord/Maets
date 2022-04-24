@@ -87,7 +87,7 @@ public class AppService : IAppsService
         var months = GetMonths(statisticsStart, currentDate);
 
         var reviewsData = await _context.Reviews
-            .Where(x => x.CreationDate >= statisticsStart)
+            .Where(x => x.AppId == appId && x.CreationDate >= statisticsStart)
             .Select(x => new
             {
                 Year = x.CreationDate.Year,

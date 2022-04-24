@@ -203,9 +203,9 @@ public class AppsController : MaetsController
             {
                 await _fileWriteService.DeleteFileAsync(oldScreenshot);
             }
+            app.Screenshots.Clear();
             foreach (var screenshot in appDto.Screenshots)
             {
-                app.Screenshots.Clear();
                 var fileKey = BuildAppScreenshotId(app.Id);
                 var file = await _fileWriteService.UploadFileAsync(fileKey, screenshot.OpenReadStream());
                 app.Screenshots.Add(file);
