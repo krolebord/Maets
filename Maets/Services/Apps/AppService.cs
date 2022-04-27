@@ -7,6 +7,8 @@ using Maets.Extensions;
 using Maets.Models.Dtos.Apps;
 using Maets.Models.Dtos.Reviews;
 using Maets.Models.Exceptions;
+using Maets.Services.Files;
+using Maets.Services.Labels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,16 +18,20 @@ namespace Maets.Services.Apps;
 public class AppService : IAppsService
 {
     private readonly MaetsDbContext _context;
+    private readonly ILabelsService _labelsService;
+    private readonly IFileWriteService _fileWriteService;
     private readonly IMapper _mapper;
 
     public AppService(
-        IHttpContextAccessor httpContextAccessor,
         MaetsDbContext context,
         IMapper mapper,
-        SignInManager<ApplicationUser> signInManager)
+        ILabelsService labelsService,
+        IFileWriteService fileWriteService)
     {
         _context = context;
         _mapper = mapper;
+        _labelsService = labelsService;
+        _fileWriteService = fileWriteService;
     }
     
     public async Task<AppDetailedDto> GetDetailed(Guid appId, Guid? userId)
@@ -164,5 +170,88 @@ public class AppService : IAppsService
             .FirstAsync(x => x.AppId == appId && x.UserId == userId);
         _context.UserCollections.Remove(collectionEntry);
         await _context.SaveChangesAsync();
+    }
+    
+    public async Task CreateApp(AppCreateDto appDto)
+    {
+        var app = new App
+        {
+            Id = Guid.NewGuid(),
+            Title = appDto.Title,
+            Description = appDto.Description,
+            ReleaseDate = appDto.ReleaseDate,
+            Price = appDto.Price
+        };
+
+        var mainImageKey = BuildAppScreenshotKey(app.Id);
+        app.MainImage = await _fileWriteService.UploadFileAsync(mainImageKey, appDto.MainImage.OpenReadStream());
+
+        if (appDto.Screenshots is not null)
+        {
+            foreach (var screenshot in appDto.Screenshots)
+            {
+                var fileKey = BuildAppScreenshotKey(app.Id);
+                var file = await _fileWriteService.UploadFileAsync(fileKey, screenshot.OpenReadStream());
+                app.Screenshots.Add(file);
+            }
+        }
+
+        var publisher = await _context.Companies.FirstOrDefaultAsync(x => x.Id == appDto.PublisherId);
+        if (publisher is not null)
+        {
+            app.Publisher = publisher;
+        }
+
+        var developers = await _context.Companies
+            .Where(x => appDto.DeveloperIds.Contains(x.Id))
+            .ToListAsync();
+        app.Developers = developers;
+
+        app.Labels = (await _labelsService.GetOrAddLabelsByNames(appDto.Labels)).ToList();
+
+        _context.Apps.Add(app);
+        await _context.SaveChangesAsync();
+
+    }
+    
+    public async Task CreateApp(AppExternalDto appDto)
+    {
+        var app = new App
+        {
+            Id = Guid.NewGuid(),
+            Title = appDto.Title,
+            Price = (decimal)appDto.Price,
+            ReleaseDate = string.IsNullOrWhiteSpace(appDto.ReleaseDate)
+                ? null
+                : DateTimeOffset.Parse(appDto.ReleaseDate)
+        };
+
+        if (!string.IsNullOrWhiteSpace(appDto.Labels))
+        {
+            app.Labels = (await _labelsService.GetOrAddLabelsByNames(appDto.Labels.Split(',')))
+                .ToList();
+        }
+        
+        if (!string.IsNullOrWhiteSpace(appDto.PublisherName))
+        {
+            app.Publisher = await _context.Companies
+                .FirstOrDefaultAsync(x => x.Name == appDto.PublisherName);
+        }
+        
+        if (!string.IsNullOrWhiteSpace(appDto.DeveloperNames))
+        {
+            var developerNames = appDto.DeveloperNames.Split(',');
+            app.Developers = await _context.Companies
+                .Where(x => developerNames.Contains(x.Name))
+                .ToListAsync();
+        }
+
+        _context.Apps.Add(app);
+        await _context.SaveChangesAsync();
+    }
+    
+    public string BuildAppScreenshotKey(Guid appId)
+    {
+        return $"app-screenshot/{appId}/{Guid.NewGuid()}.png";
     }
 }

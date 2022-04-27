@@ -1,0 +1,44 @@
+@model Maets.Models.ViewModels.TableActionsViewModel
+
+<div class="accordion my-2" id="tableActionsAccordion">
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="flush-headingOne">
+            <button class="accordion-button btn-outline-secondary collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                Import
+            </button>
+        </h2>
+        <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#tableActionsAccordion">
+            <form enctype="multipart/form-data" method="post" asp-action="Import" class="form-group d-flex mx-1 my-2">
+                <input id="importXlsxButton" type="submit" value="Import from .xlsx" disabled class="btn btn-sm btn-outline-primary w-25"/>
+                <input id="importXlsxInput" name="spreadsheetFile" type="file" class="form-control"/>
+            </form>
+            <form enctype="multipart/form-data" method="post" asp-action="Import" class="form-group d-flex mx-1 my-2">
+                <input id="importDocxButton" type="submit" value="Import from .docx" disabled class="btn btn-sm btn-outline-primary w-25"/>
+                <input id="importDocxInput" name="spreadsheetFile" type="file" class="form-control"/>
+            </form>
+        </div>
+    </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="flush-headingTwo">
+            <button class="accordion-button btn-outline-secondary collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+                Export
+            </button>
+        </h2>
+        <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#tableActionsAccordion">
+            <form method="get" asp-action="Export" class="form-group mx-1 my-2">
+                <a asp-controller="Apps" asp-action="Export" class="btn btn-outline-primary mx-1 my-2">
+                    Export All as .xlsx
+                </a>
+                <input id="exportXlsxButton" type="submit" value="Export Selected as .xlsx" disabled class="btn btn-outline-primary"/>
+                <select id="exportXlsxSelect" name="selectedAppIds" multiple class="form-control search-select" asp-items="@ViewContext.ViewBag.SelectableApps"></select>
+            </form>
+            <form method="get" asp-action="Export" class="form-group mx-1 my-2">
+                <a asp-controller="Apps" asp-action="Export" class="btn btn-outline-primary mx-1 my-2">
+                    Export All as .docx
+                </a>
+                <input id="exportDocxButton" type="submit" value="Export Selected as .docx" disabled class="btn btn-outline-primary"/>
+                <select id="exportDocxSelect" name="selectedAppIds" multiple class="form-control search-select" asp-items="@ViewContext.ViewBag.SelectableApps"></select>
+            </form>
+        </div>
+    </div>
+</div>

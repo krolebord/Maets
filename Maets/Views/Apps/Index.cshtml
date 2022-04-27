@@ -19,6 +19,8 @@
                 <partial name="Components/_LabelPartial" model="label"/>
             }
         </span>;
+
+    var tableActionsModel = new TableActionsViewModel();
     
     var tableModel = new TableViewModel<AppTableDto>
     {
@@ -66,4 +68,40 @@
 
 <h1>Apps</h1>
 
+<partial name="_TableFileActionsPartial" model="tableActionsModel"/>
+
 <partial name="_TablePartial" model="tableModel"/>
+
+@section Scripts
+{
+    <script>
+        let registerImportInput = (inputSelector, buttonSelector) => {
+            $(inputSelector).change(function(){
+                if($(inputSelector).val() === '') {
+                    $(buttonSelector).attr('disabled', true)
+                }
+                else{
+                    $(buttonSelector).attr('disabled', false);
+                }
+            })
+        };
+        
+        let registerExportInput = (inputSelector, buttonSelector) => {
+            $(inputSelector).change(function(){
+                let val = $(inputSelector).val();
+                if(!val || val.length === 0) {
+                    $(buttonSelector).attr('disabled', true)
+                }
+                else{
+                    $(buttonSelector).attr('disabled', false);
+                }
+            })
+        }
+    
+        registerImportInput('#importXlsxInput', '#importXlsxButton');
+        registerImportInput('#importDocxInput', '#importDocxButton');
+        
+        registerExportInput('#exportXlsxSelect', '#exportXlsxButton');
+        registerExportInput('#exportDocxSelect', '#exportDocxButton');
+    </script>
+}

@@ -13,7 +13,9 @@
     <PackageReference Include="AutoMapper.Collection" Version="8.0.0" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
     <PackageReference Include="ChartJSCore" Version="3.3.0" />
+    <PackageReference Include="ClosedXML" Version="0.95.4" />
     <PackageReference Include="ColorMinePortable" Version="2.0.1" />
+    <PackageReference Include="DocX" Version="2.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.4" />
@@ -83,6 +85,7 @@
     <_ContentIncludedByDefault Remove="wwwroot\lib\jquery-validation\LICENSE.md" />
     <_ContentIncludedByDefault Remove="Views\Store\Index.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Store\Search.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\ViewComponents\TableFileActions\Default.cshtml" />
   </ItemGroup>
 
   <ItemGroup>

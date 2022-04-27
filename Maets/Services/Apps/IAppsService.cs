@@ -1,3 +1,4 @@
+using Maets.Domain.Entities;
 using Maets.Models.Dtos.Apps;
 using Maets.Models.Dtos.Reviews;
 
@@ -16,4 +17,10 @@ public interface IAppsService
     Task EnsureInCollection(Guid appId, Guid userId);
     
     Task EnsureRemovedFromCollection(Guid appId, Guid userId);
+
+    Task CreateApp(AppCreateDto createDto);
+
+    Task CreateApp(AppExternalDto createDto);
+
+    string BuildAppScreenshotKey(Guid appId);
 }

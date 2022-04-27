@@ -1,11 +1,15 @@
 using AutoMapper;
+using ClosedXML.Excel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Maets.Data;
 using Maets.Domain.Constants;
 using Maets.Domain.Entities;
+using Maets.Extensions;
 using Maets.Models.Dtos.Apps;
+using Maets.Services.Apps;
+using Maets.Services.ExternalData;
 using Maets.Services.Files;
 using Maets.Services.Labels;
 using Microsoft.AspNetCore.Authorization;
@@ -16,18 +20,22 @@ namespace Maets.Controllers;
 public class AppsController : MaetsController
 {
     private readonly MaetsDbContext _context;
-    private readonly IFileReadService _fileReadService;
+    private readonly IAppsService _appsService;
     private readonly IFileWriteService _fileWriteService;
     private readonly ILabelsService _labelsService;
     private readonly IMapper _mapper;
+    private readonly ExcelDataService _excelDataService;
+    private readonly DataTransformationService _transformationService;
 
-    public AppsController(MaetsDbContext context, IFileReadService fileReadService, IFileWriteService fileWriteService, ILabelsService labelsService, IMapper mapper)
+    public AppsController(MaetsDbContext context, IFileWriteService fileWriteService, ILabelsService labelsService, IMapper mapper, DataTransformationService transformationService, ExcelDataService excelDataService, IAppsService appsService)
     {
         _context = context;
-        _fileReadService = fileReadService;
         _fileWriteService = fileWriteService;
         _labelsService = labelsService;
         _mapper = mapper;
+        _transformationService = transformationService;
+        _excelDataService = excelDataService;
+        _appsService = appsService;
     }
 
     // GET: Apps
@@ -40,6 +48,8 @@ public class AppsController : MaetsController
             .ToListAsync();
 
         var appDtos = _mapper.Map<List<AppTableDto>>(apps);
+        
+        ViewData["SelectableApps"] = new SelectList(apps, "Id", "Title");
         
         return View(appDtos);
     }
@@ -89,43 +99,7 @@ public class AppsController : MaetsController
             return View(appDto);
         }
 
-        var app = new App
-        {
-            Id = Guid.NewGuid(),
-            Title = appDto.Title,
-            Description = appDto.Description,
-            ReleaseDate = appDto.ReleaseDate,
-            Price = appDto.Price
-        };
-
-        var mainImageKey = BuildAppScreenshotId(app.Id);
-        app.MainImage = await _fileWriteService.UploadFileAsync(mainImageKey, appDto.MainImage.OpenReadStream());
-
-        if (appDto.Screenshots is not null)
-        {
-            foreach (var screenshot in appDto.Screenshots)
-            {
-                var fileKey = BuildAppScreenshotId(app.Id);
-                var file = await _fileWriteService.UploadFileAsync(fileKey, screenshot.OpenReadStream());
-                app.Screenshots.Add(file);
-            }
-        }
-
-        var publisher = await _context.Companies.FirstOrDefaultAsync(x => x.Id == appDto.PublisherId);
-        if (publisher is not null)
-        {
-            app.Publisher = publisher;
-        }
-
-        var developers = await _context.Companies
-            .Where(x => appDto.DeveloperIds.Contains(x.Id))
-            .ToListAsync();
-        app.Developers = developers;
-
-        app.Labels = (await _labelsService.GetOrAddLabelsByNames(appDto.Labels)).ToList();
-
-        _context.Apps.Add(app);
-        await _context.SaveChangesAsync();
+        await _appsService.CreateApp(appDto);
         
         return RedirectToAction(nameof(Index));
     }
@@ -200,7 +174,7 @@ public class AppsController : MaetsController
             {
                 await _fileWriteService.DeleteFileAsync(app.MainImage);
             }
-            var mainImageKey = BuildAppScreenshotId(app.Id);
+            var mainImageKey = _appsService.BuildAppScreenshotKey(app.Id);
             app.MainImage = await _fileWriteService.UploadFileAsync(mainImageKey, appDto.MainImage.OpenReadStream());
         }
 
@@ -213,7 +187,7 @@ public class AppsController : MaetsController
             app.Screenshots.Clear();
             foreach (var screenshot in appDto.Screenshots)
             {
-                var fileKey = BuildAppScreenshotId(app.Id);
+                var fileKey = _appsService.BuildAppScreenshotKey(app.Id);
                 var file = await _fileWriteService.UploadFileAsync(fileKey, screenshot.OpenReadStream());
                 app.Screenshots.Add(file);
             }
@@ -259,9 +233,65 @@ public class AppsController : MaetsController
         return RedirectToAction(nameof(Index));
     }
 
-    public string BuildAppScreenshotId(Guid appId)
+    [HttpGet, ActionName("Export")]
+    public async Task<IActionResult> ExportApps(IEnumerable<Guid>? selectedAppIds = null)
     {
-        return $"app-screenshot/{appId}/{Guid.NewGuid()}.png";
+        var apps = await _context.Apps
+            .Include(x => x.Developers)
+            .Include(x => x.Publisher)
+            .Include(x => x.Labels)
+            .WhereIf(x => selectedAppIds!.Contains(x.Id), selectedAppIds is not null && selectedAppIds.Any())
+            .ToListAsync();
+
+        var appDtos = _mapper.Map<List<AppExternalDto>>(apps);
+        var table = _transformationService.ToTableData(appDtos);
+        
+        using var workbook = _excelDataService.ExportWorkbook(table);
+        
+        using var memoryStream = new MemoryStream();
+        workbook.SaveAs(memoryStream);
+        await memoryStream.FlushAsync();
+        
+        return new FileContentResult(memoryStream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        {
+            FileDownloadName = "AppsExport.xlsx"
+        };
+    }
+
+    [HttpPost, ActionName("Import")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ImportApps(IFormFile spreadsheetFile)
+    {
+        if (!ModelState.IsValid)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        try
+        {
+            await using var fileStream = spreadsheetFile.OpenReadStream();
+            using var workbook = new XLWorkbook(fileStream, XLEventTracking.Disabled);
+
+            var tableData = _excelDataService.ImportFromWorkbook(workbook);
+            var apps = _transformationService.FromTableData<AppExternalDto>(tableData);
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+
+            foreach (var app in apps)
+            {
+                await _appsService.CreateApp(app);
+            }
+
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+        }
+        catch (Exception)
+        {
+            ModelState.AddModelError("spreadsheetFile", "Invalid spreadsheet");
+            return RedirectToAction(nameof(Index));
+        }
+        
+        
+        return RedirectToAction(nameof(Index));
     }
 
     private async Task LoadViewData()
@@ -275,8 +305,6 @@ public class AppsController : MaetsController
             .OrderBy(x => x.Name)
             .ToListAsync();
 
-        ViewData["Companies"] = new SelectList(companies, "Id", "Name");
-
         var labels = await _context.Labels
             .Select(x => new
             {
@@ -284,7 +312,8 @@ public class AppsController : MaetsController
             })
             .OrderBy(x => x.Name)
             .ToListAsync();
-
+        
+        ViewData["Companies"] = new SelectList(companies, "Id", "Name");
         ViewData["Labels"] = new SelectList(labels, "Name", "Name");
     }
 }
