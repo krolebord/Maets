@@ -3,6 +3,7 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Maets.Attributes;
 using Maets.Models.ExternalData;
+using Newtonsoft.Json;
 
 namespace Maets.Services.ExternalData;
 
@@ -72,8 +73,7 @@ public class DocxDataService
             foreach (var item in row.Cells)
             {
                 var cell = new TableCell();
-            
-                cell.Append(new Paragraph(new Run(new Text(item?.ToString() ?? string.Empty))));
+                cell.Append(new Paragraph(new Run(new Text(item))));
 
                 tableRow.AppendChild(cell);
             }
@@ -114,7 +114,7 @@ public class DocxDataService
         {
             var rowData = row.Descendants<TableCell>()
                 .Select(cell => cell.Descendants<Text>().First().Text)
-                .Cast<object?>().ToList();
+                .ToList();
             
             commonTable.Rows.Add(new CommonTable.Row
             {

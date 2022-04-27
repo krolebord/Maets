@@ -2,7 +2,6 @@ using AutoMapper;
 using Maets.Domain.Entities;
 using Maets.Extensions;
 using Maets.Models.Dtos.MediaFiles;
-using Newtonsoft.Json;
 
 namespace Maets.Models.Dtos.Apps;
 
@@ -15,10 +14,8 @@ public class AppsProfile : Profile
             .ForMember(x => x.PublisherName, opt => opt.MapFrom(x => x.Publisher == null ? string.Empty : x.Publisher.Name));
 
         CreateMap<App, AppExternalDto>()
-            .ForMember(x => x.ReleaseDate, opt => opt.MapFrom(x => x.ReleaseDate == null ? string.Empty : x.ReleaseDate.Value.ToString("O")))
-            .ForMember(x => x.DeveloperNames, opt => opt.MapFrom(x => string.Join(",", x.Developers.Select(dev => dev.Name))))
-            .ForMember(x => x.PublisherName, opt => opt.MapFrom(x => x.Publisher == null ? string.Empty : x.Publisher.Name))
-            .ForMember(x => x.Labels, opt => opt.MapFrom(x => string.Join(",", x.Labels.Select(dev => dev.Name))));
+            .ForMember(x => x.DeveloperNames, opt => opt.MapFrom(x => x.Developers.Select(dev => dev.Name)))
+            .ForMember(x => x.PublisherName, opt => opt.MapFrom(x => x.Publisher == null ? string.Empty : x.Publisher.Name));
 
         CreateMap<App, AppDetailedDto>()
             .MapImageUrl(x => x.MainImageUrl, app => app.MainImage)

@@ -1,6 +1,7 @@
 using ClosedXML.Excel;
 using Maets.Attributes;
 using Maets.Models.ExternalData;
+using Newtonsoft.Json;
 
 namespace Maets.Services.ExternalData;
 
@@ -28,8 +29,7 @@ public class ExcelDataService
             var row = table.Rows[rowIndex];
             for (int cellIndex = 0; cellIndex < row.Cells.Count; ++cellIndex)
             {
-                var value = row.Cells[cellIndex] ?? string.Empty;
-                worksheet.Cell(rowIndex + 2, cellIndex + 1).SetValue(value);
+                worksheet.Cell(rowIndex + 2, cellIndex + 1).SetValue(row.Cells[cellIndex]);
             }
         }
         
@@ -56,10 +56,10 @@ public class ExcelDataService
 
         foreach (var row in worksheet.Rows().Skip(1))
         {
-            var rowData = new List<object?>();
+            var rowData = new List<string>();
             for (int columnIndex = 0; columnIndex < table.Columns.Count; columnIndex++)
             {
-                rowData.Add(row.Cell(columnIndex + 1).Value);
+                rowData.Add(row.Cell(columnIndex + 1).GetString());
             }
             table.Rows.Add(new CommonTable.Row
             {

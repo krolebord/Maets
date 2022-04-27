@@ -21,6 +21,6 @@ public class CommonTable
 
     public class Row
     {
-        public List<object?> Cells { get; set; } = new();
+        public List<string> Cells { get; set; } = new();
     }
 }

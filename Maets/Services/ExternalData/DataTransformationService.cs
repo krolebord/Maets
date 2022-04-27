@@ -26,7 +26,17 @@ public class DataTransformationService
             var row = new CommonTable.Row
             {
                 Cells = properties
-                    .Select(x => x.GetValue(item))
+                    .Select(x => {
+                        var value = x.GetValue(item);
+
+                        if (value is string stringValue)
+                        {
+                            return stringValue;
+                        }
+                        
+                        var serializedValue = JsonConvert.SerializeObject(value);
+                        return serializedValue;
+                    })
                     .ToList()
             };
 
@@ -61,31 +71,24 @@ public class DataTransformationService
 
             for (int rowIndex = 0; rowIndex < items.Count; rowIndex++)
             {
-                object? value = table.Rows[rowIndex].Cells[columnIndex];
-                
-                if(value is null)
-                    continue;
+                var value = table.Rows[rowIndex].Cells[columnIndex];
 
                 var targetType = property.PropertyType;
                 
-                if (value.GetType().IsAssignableTo(targetType))
+                if (property.PropertyType == typeof(string))
                 {
                     property.SetValue(items[rowIndex], value);
                 }
-                else if (value is string stringValue)
+                else
                 {
-                    var convertedValue = JsonConvert.DeserializeObject(stringValue, targetType);
-
+                    var convertedValue = JsonConvert.DeserializeObject(value, targetType);
+                    
                     if (convertedValue is null)
                     {
                         throw new NotSupportedException($"Property type: {property.PropertyType.Name} is not supported");
                     }
-                    
+
                     property.SetValue(items[rowIndex], convertedValue);
-                }
-                else
-                {
-                    throw new NotSupportedException($"Property type: {property.PropertyType.Name} is not supported");
                 }
             }
         }

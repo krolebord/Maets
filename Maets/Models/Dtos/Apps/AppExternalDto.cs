@@ -4,13 +4,13 @@ public class AppExternalDto
 {
     public string Title { get; set; } = null!;
 
-    public string? ReleaseDate { get; set; }
+    public DateTimeOffset? ReleaseDate { get; set; }
     
-    public double Price { get; set; }
+    public decimal Price { get; set; }
 
     public string PublisherName { get; set; } = string.Empty;
 
-    public string DeveloperNames { get; set; } = string.Empty;
+    public IEnumerable<string> DeveloperNames { get; set; } = new List<string>();
 
-    public string Labels { get; set; } = string.Empty;
+    public IEnumerable<string> Labels { get; set; } = new List<string>();
 }

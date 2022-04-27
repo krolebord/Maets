@@ -220,17 +220,12 @@ public class AppService : IAppsService
         {
             Id = Guid.NewGuid(),
             Title = appDto.Title,
-            Price = (decimal)appDto.Price,
-            ReleaseDate = string.IsNullOrWhiteSpace(appDto.ReleaseDate)
-                ? null
-                : DateTimeOffset.Parse(appDto.ReleaseDate)
+            Price = appDto.Price,
+            ReleaseDate = appDto.ReleaseDate
         };
 
-        if (!string.IsNullOrWhiteSpace(appDto.Labels))
-        {
-            app.Labels = (await _labelsService.GetOrAddLabelsByNames(appDto.Labels.Split(',')))
-                .ToList();
-        }
+        app.Labels = (await _labelsService.GetOrAddLabelsByNames(appDto.Labels))
+            .ToList();
         
         if (!string.IsNullOrWhiteSpace(appDto.PublisherName))
         {
@@ -238,13 +233,9 @@ public class AppService : IAppsService
                 .FirstOrDefaultAsync(x => x.Name == appDto.PublisherName);
         }
         
-        if (!string.IsNullOrWhiteSpace(appDto.DeveloperNames))
-        {
-            var developerNames = appDto.DeveloperNames.Split(',');
-            app.Developers = await _context.Companies
-                .Where(x => developerNames.Contains(x.Name))
-                .ToListAsync();
-        }
+        app.Developers = await _context.Companies
+            .Where(x => appDto.DeveloperNames.Contains(x.Name))
+            .ToListAsync();
 
         _context.Apps.Add(app);
         await _context.SaveChangesAsync();
