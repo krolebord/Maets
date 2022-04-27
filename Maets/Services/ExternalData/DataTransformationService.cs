@@ -1,5 +1,7 @@
+using System.Reflection;
 using Maets.Attributes;
 using Maets.Models.ExternalData;
+using Newtonsoft.Json;
 
 namespace Maets.Services.ExternalData;
 
@@ -59,7 +61,32 @@ public class DataTransformationService
 
             for (int rowIndex = 0; rowIndex < items.Count; rowIndex++)
             {
-                property.SetValue(items[rowIndex], table.Rows[rowIndex].Cells[columnIndex]);
+                object? value = table.Rows[rowIndex].Cells[columnIndex];
+                
+                if(value is null)
+                    continue;
+
+                var targetType = property.PropertyType;
+                
+                if (value.GetType().IsAssignableTo(targetType))
+                {
+                    property.SetValue(items[rowIndex], value);
+                }
+                else if (value is string stringValue)
+                {
+                    var convertedValue = JsonConvert.DeserializeObject(stringValue, targetType);
+
+                    if (convertedValue is null)
+                    {
+                        throw new NotSupportedException($"Property type: {property.PropertyType.Name} is not supported");
+                    }
+                    
+                    property.SetValue(items[rowIndex], convertedValue);
+                }
+                else
+                {
+                    throw new NotSupportedException($"Property type: {property.PropertyType.Name} is not supported");
+                }
             }
         }
 

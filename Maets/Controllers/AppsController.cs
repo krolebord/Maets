@@ -8,6 +8,7 @@ using Maets.Domain.Constants;
 using Maets.Domain.Entities;
 using Maets.Extensions;
 using Maets.Models.Dtos.Apps;
+using Maets.Models.ExternalData;
 using Maets.Services.Apps;
 using Maets.Services.ExternalData;
 using Maets.Services.Files;
@@ -25,9 +26,10 @@ public class AppsController : MaetsController
     private readonly ILabelsService _labelsService;
     private readonly IMapper _mapper;
     private readonly ExcelDataService _excelDataService;
+    private readonly DocxDataService _docxDataService;
     private readonly DataTransformationService _transformationService;
 
-    public AppsController(MaetsDbContext context, IFileWriteService fileWriteService, ILabelsService labelsService, IMapper mapper, DataTransformationService transformationService, ExcelDataService excelDataService, IAppsService appsService)
+    public AppsController(MaetsDbContext context, IFileWriteService fileWriteService, ILabelsService labelsService, IMapper mapper, DataTransformationService transformationService, ExcelDataService excelDataService, IAppsService appsService, DocxDataService docxDataService)
     {
         _context = context;
         _fileWriteService = fileWriteService;
@@ -36,6 +38,7 @@ public class AppsController : MaetsController
         _transformationService = transformationService;
         _excelDataService = excelDataService;
         _appsService = appsService;
+        _docxDataService = docxDataService;
     }
 
     // GET: Apps
@@ -233,34 +236,39 @@ public class AppsController : MaetsController
         return RedirectToAction(nameof(Index));
     }
 
-    [HttpGet, ActionName("Export")]
-    public async Task<IActionResult> ExportApps(IEnumerable<Guid>? selectedAppIds = null)
+    [HttpGet, ActionName("ExportSpreadsheet")]
+    public async Task<IActionResult> ExportSpreadsheet(IEnumerable<Guid>? selectedAppIds = null)
     {
-        var apps = await _context.Apps
-            .Include(x => x.Developers)
-            .Include(x => x.Publisher)
-            .Include(x => x.Labels)
-            .WhereIf(x => selectedAppIds!.Contains(x.Id), selectedAppIds is not null && selectedAppIds.Any())
-            .ToListAsync();
-
-        var appDtos = _mapper.Map<List<AppExternalDto>>(apps);
-        var table = _transformationService.ToTableData(appDtos);
-        
-        using var workbook = _excelDataService.ExportWorkbook(table);
+        var table = await GetExportTable(selectedAppIds);
         
         using var memoryStream = new MemoryStream();
-        workbook.SaveAs(memoryStream);
+        _excelDataService.ExportSpreadsheetToStream(memoryStream, table);
         await memoryStream.FlushAsync();
         
         return new FileContentResult(memoryStream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         {
-            FileDownloadName = "AppsExport.xlsx"
+            FileDownloadName = $"AppsExport-{DateTime.Now}.xlsx"
+        };
+    }
+    
+    [HttpGet, ActionName("ExportDocument")]
+    public async Task<IActionResult> ExportDocument(IEnumerable<Guid>? selectedAppIds = null)
+    {
+        var table = await GetExportTable(selectedAppIds);
+
+        using var memoryStream = new MemoryStream();
+        _docxDataService.ExportDocumentToStream(memoryStream, table);
+        await memoryStream.FlushAsync();
+        
+        return new FileContentResult(memoryStream.ToArray(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+        {
+            FileDownloadName = $"AppsExport-{DateTime.Now}.docx"
         };
     }
 
-    [HttpPost, ActionName("Import")]
+    [HttpPost, ActionName("ImportSpreadsheet")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ImportApps(IFormFile spreadsheetFile)
+    public async Task<IActionResult> ImportFromSpreadsheet(IFormFile spreadsheetFile)
     {
         if (!ModelState.IsValid)
         {
@@ -270,30 +278,70 @@ public class AppsController : MaetsController
         try
         {
             await using var fileStream = spreadsheetFile.OpenReadStream();
-            using var workbook = new XLWorkbook(fileStream, XLEventTracking.Disabled);
-
-            var tableData = _excelDataService.ImportFromWorkbook(workbook);
+            var tableData = _excelDataService.ImportFromSpreadsheetStream(fileStream);
             var apps = _transformationService.FromTableData<AppExternalDto>(tableData);
-            await using var transaction = await _context.Database.BeginTransactionAsync();
 
-            foreach (var app in apps)
-            {
-                await _appsService.CreateApp(app);
-            }
-
-            await _context.SaveChangesAsync();
-            await transaction.CommitAsync();
+            await AddImportedApps(apps);
         }
         catch (Exception)
         {
             ModelState.AddModelError("spreadsheetFile", "Invalid spreadsheet");
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+    
+    [HttpPost, ActionName("ImportDocument")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ImportFromDocument(IFormFile documentFile)
+    {
+        if (!ModelState.IsValid)
+        {
             return RedirectToAction(nameof(Index));
         }
-        
-        
+
+        try
+        {
+            await using var fileStream = documentFile.OpenReadStream();
+            var tableData = _docxDataService.ImportFromDocumentStream(fileStream);
+            var apps = _transformationService.FromTableData<AppExternalDto>(tableData);
+
+            await AddImportedApps(apps);
+        }
+        catch (Exception)
+        {
+            ModelState.AddModelError("documentFile", "Invalid spreadsheet");
+        }
+
         return RedirectToAction(nameof(Index));
     }
 
+    private async Task AddImportedApps(IEnumerable<AppExternalDto> apps)
+    {
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+
+        foreach (var app in apps)
+        {
+            await _appsService.CreateApp(app);
+        }
+
+        await _context.SaveChangesAsync();
+        await transaction.CommitAsync();
+    }
+    
+    private async Task<CommonTable> GetExportTable(IEnumerable<Guid>? appIds = null)
+    {
+        var apps = await _context.Apps
+            .Include(x => x.Developers)
+            .Include(x => x.Publisher)
+            .Include(x => x.Labels)
+            .WhereIf(x => appIds!.Contains(x.Id), appIds is not null && appIds.Any())
+            .ToListAsync();
+
+        var appDtos = _mapper.Map<List<AppExternalDto>>(apps);
+        return _transformationService.ToTableData(appDtos);
+    }
+    
     private async Task LoadViewData()
     {
         var companies = await _context.Companies

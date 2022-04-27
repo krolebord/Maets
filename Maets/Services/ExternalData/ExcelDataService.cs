@@ -7,7 +7,7 @@ namespace Maets.Services.ExternalData;
 [Dependency]
 public class ExcelDataService
 {
-    public IXLWorkbook ExportWorkbook(CommonTable table)
+    public void ExportSpreadsheetToStream(Stream stream, CommonTable table)
     {
         if (!table.Validate())
         {
@@ -32,12 +32,13 @@ public class ExcelDataService
                 worksheet.Cell(rowIndex + 2, cellIndex + 1).SetValue(value);
             }
         }
-
-        return workbook;
+        
+        workbook.SaveAs(stream);
     }
 
-    public CommonTable ImportFromWorkbook(IXLWorkbook workbook)
+    public CommonTable ImportFromSpreadsheetStream(Stream stream)
     {
+        using var workbook = new XLWorkbook(stream, XLEventTracking.Disabled);
         var worksheet = workbook.Worksheets.First();
         var worksheetColumns = worksheet
             .Row(1)
