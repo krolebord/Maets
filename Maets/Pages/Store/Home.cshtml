@@ -57,14 +57,14 @@
     </div>
 </div>
 
-<h1>New releases</h1>
-@foreach (var app in Model.NewReleases)
+<h1>Top sellers</h1>
+@foreach (var app in Model.TopSellers)
 {
     <partial name="Components/_AppCardPartial" model="app"/>
 }
 
-<h1>Upcoming releases</h1>
-@foreach (var app in Model.UpcomingReleases)
+<h1>New releases</h1>
+@foreach (var app in Model.NewReleases)
 {
     <partial name="Components/_AppCardPartial" model="app"/>
 }

@@ -13,7 +13,7 @@ public class AppCreateDto
     public string Description { get; set; } = string.Empty;
 
     public DateTimeOffset? ReleaseDate { get; set; }
-
+    
     public decimal Price { get; set; }
 
     [Required]

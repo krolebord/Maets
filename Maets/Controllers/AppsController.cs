@@ -82,6 +82,13 @@ public class AppsController : MaetsController
             return View(appDto);
         }
 
+        if (await _context.Apps.AnyAsync(x => x.Title == appDto.Title))
+        {
+            ModelState.AddModelError("title", "App with the same title already exists");
+            await LoadViewData();
+            return View(appDto);
+        }
+
         var app = new App
         {
             Id = Guid.NewGuid(),

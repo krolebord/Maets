@@ -17,7 +17,7 @@ public class HomePage : PageModel
     
     public ICollection<AppHomeDto> NewReleases { get; set; } = new List<AppHomeDto>();
     
-    public ICollection<AppHomeDto> UpcomingReleases { get; set; } = new List<AppHomeDto>();
+    public ICollection<AppHomeDto> TopSellers { get; set; } = new List<AppHomeDto>();
 
     public HomePage(MaetsDbContext context, IMapper mapper)
     {
@@ -38,11 +38,10 @@ public class HomePage : PageModel
             .Take(5);
         NewReleases = await GetAppsFromQuery(newReleasesQuery);
         
-        var upcomingReleasesQuery = _context.Apps
-            .Where(x => x.ReleaseDate == null)
+        var topSellersQuery = _context.Apps
             .OrderByDescending(x => x.InUserCollections.Count)
             .Take(5);
-        UpcomingReleases = await GetAppsFromQuery(upcomingReleasesQuery);
+        TopSellers = await GetAppsFromQuery(topSellersQuery);
     }
 
     private async Task<ICollection<AppHomeDto>> GetAppsFromQuery(IQueryable<App> queryable)
