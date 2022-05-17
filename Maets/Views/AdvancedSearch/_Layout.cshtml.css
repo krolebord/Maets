@@ -1,0 +1,5 @@
+.query-body form input,
+.query-body form .form-control,
+.query-body form select {
+    margin-bottom: 4px;
+}

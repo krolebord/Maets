@@ -1,0 +1,13 @@
+@model Maets.Models.ViewModels.AdvancedSearchViewModel?
+
+<h1>Apps developed by company X</h1>
+
+<form asp-action="Filter2" method="get">
+    <select name="companyId" class="form-control search-select" asp-items="ViewBag.Companies"></select>
+    <input type="submit" value="Query" class="btn btn-primary"/>
+</form>
+
+@if (Model is not null)
+{
+    <partial name="PartialViews/_SearchResultPartial" model="Model"/>
+}

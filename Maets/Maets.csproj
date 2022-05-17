@@ -15,6 +15,7 @@
     <PackageReference Include="ChartJSCore" Version="3.3.0" />
     <PackageReference Include="ClosedXML" Version="0.95.4" />
     <PackageReference Include="ColorMinePortable" Version="2.0.1" />
+    <PackageReference Include="Dapper" Version="2.0.123" />
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.16.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.4" />
@@ -86,6 +87,7 @@
     <_ContentIncludedByDefault Remove="Views\Store\Index.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Store\Search.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Shared\ViewComponents\TableFileActions\Default.cshtml" />
+    <_ContentIncludedByDefault Remove="wwwroot\public\sql-highlight\keywords.js" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,0 +1,10 @@
+@model Maets.Models.ViewModels.AdvancedSearchViewModel
+<br/>
+<h2>Query</h2>
+<code id="sql">@Model.Sql</code>
+<br/>
+<h2>Results</h2>
+@foreach (var item in Model.Items)
+{
+    <a href="@item.Url" class="btn btn-outline-primary mb-1" style="display: block">@item.Name</a>
+}

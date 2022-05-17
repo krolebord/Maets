@@ -1,0 +1,13 @@
+@model Maets.Models.ViewModels.AdvancedSearchViewModel?
+
+<h1>App that has all labels from app X</h1>
+
+<form asp-action="Filter6" method="get">
+    <select name="appId" class="form-control search-select" asp-items="ViewBag.Apps"></select>
+    <input type="submit" value="Query" class="btn btn-primary"/>
+</form>
+
+@if (Model is not null)
+{
+    <partial name="PartialViews/_SearchResultPartial" model="Model"/>
+}

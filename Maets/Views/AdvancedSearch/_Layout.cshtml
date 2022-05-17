@@ -1,0 +1,22 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="query-body">
+    @RenderBody()
+</div>
+
+@section Scripts
+{
+    <script src="/js/sql-highlight.js"></script>
+    <script>
+        let body = document.getElementById('sql');
+        let sql = body.innerText;
+        
+        const highlighted = highlight(sql, {
+          html: true
+        })
+        
+        body.innerHTML = highlighted;
+    </script>
+}

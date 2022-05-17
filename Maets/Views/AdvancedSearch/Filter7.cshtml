@@ -1,0 +1,14 @@
+@model Maets.Models.ViewModels.AdvancedSearchViewModel?
+
+<h1>Apps that have at least N reviews with score higher than average score of app X</h1>
+
+<form asp-action="Filter7" method="get">
+    <input name="reviewsCount" type="number" class="form-control"/>
+    <select name="appId" class="form-control search-select" asp-items="ViewBag.Apps"></select>
+    <input type="submit" value="Query" class="btn btn-primary"/>
+</form>
+
+@if (Model is not null)
+{
+    <partial name="PartialViews/_SearchResultPartial" model="Model"/>
+}

@@ -1,0 +1,13 @@
+@model Maets.Models.ViewModels.AdvancedSearchViewModel?
+
+<h1>Apps with not less than N labels</h1>
+
+<form asp-action="Filter3" method="get">
+    <input name="labelsCount" type="number" class="form-control"/>
+    <input type="submit" value="Query" class="btn btn-primary"/>
+</form>
+
+@if (Model is not null)
+{
+    <partial name="PartialViews/_SearchResultPartial" model="Model"/>
+}
